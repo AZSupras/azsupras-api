@@ -31,16 +31,23 @@ export class EmailService {
   ) {}
 
   private async _send(mail: ISendMailOptions): Promise<ISentMessageInfo> {
-    const opts: ISendMailOptions = {
-      from: this.configService.get<string>('MAIL_FROM'),
-      to: mail.to,
-      subject: mail.subject,
-      template: mail.template,
-      context: mail.context,
-    };
+    try {
+      const opts: ISendMailOptions = {
+        from: this.configService.get<string>('MAIL_FROM'),
+        to: mail.to,
+        subject: mail.subject,
+        template: mail.template,
+        context: mail.context,
+      };
 
-    const results: ISentMessageInfo = await this.mailerService.sendMail(opts);
-    return results;
+      const results: ISentMessageInfo = await this.mailerService.sendMail(opts);
+      console.log('results:', results);
+
+      return results;
+    } catch (error) {
+      this.log.error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
   }
 
   // private async _generateEmailVerifyToken(userId: string) {
@@ -59,7 +66,7 @@ export class EmailService {
   // }
 
   // send verification email
-  public async _sendConfirmEmail(
+  public async sendConfirmEmail(
     mail: CreateEmailDto,
   ): Promise<ISentMessageInfo> {
     this.log.debug(`Sending confirmation email to ${mail.to}`);
@@ -84,7 +91,7 @@ export class EmailService {
   }
 
   // send welcome email
-  public async _sendWelcomeEmail(
+  public async sendWelcomeEmail(
     mail: CreateEmailDto,
   ): Promise<ISentMessageInfo> {
     this.log.debug(`Sending welcome email to ${mail.to}`);
@@ -97,37 +104,6 @@ export class EmailService {
         email: mail.to,
         firstName: mail.context.firstName,
         lastName: mail.context.lastName,
-      },
-    };
-
-    const results: ISentMessageInfo = await this._send(opts);
-
-    return results;
-  }
-
-  // send newsletter subscription email
-  public async _sendNewsletterSubscription(
-    mail: CreateEmailDto,
-  ): Promise<ISentMessageInfo> {
-    this.log.debug(
-      `Sending newsletter subscription email to ${mail.context.firstName} at ${mail.to}`,
-    );
-    const baseUrl = this.configService.get<string>('APP_BASE_URL');
-
-    const unsubscribeLink = `${baseUrl}/unsubscribe?email=${mail.to}&token=${mail.context.token}`;
-
-    const opts: ISendMailOptions = {
-      to: mail.to,
-      bcc: 'nd@ndboost.com',
-      subject: 'Newsletter Subscription',
-      template: 'newsletter_subscription',
-      context: {
-        email: mail.to,
-        token: mail.context.token,
-        firstName: mail.context.firstName || 'Gordon',
-        lastName: mail.context.lastName,
-        message: mail.context.message,
-        unsubscribeLink: unsubscribeLink,
       },
     };
 
@@ -194,13 +170,13 @@ export class EmailService {
 
         switch (email.template) {
           case 'confirm_email':
-            response = await this._sendConfirmEmail(email);
+            response = await this.sendConfirmEmail(email);
             break;
           case 'welcome':
-            response = await this._sendWelcomeEmail(email);
+            response = await this.sendWelcomeEmail(email);
             break;
           case 'newsletter_subscription':
-            response = await this._sendNewsletterSubscription(email);
+            response = await this.sendNewsletterSubscription(email);
             break;
           default:
             break;

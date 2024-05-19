@@ -38,15 +38,13 @@ export class EmailProcessor {
 
     switch (job.data.template) {
       case 'confirm_email':
-        response = await this.emailService._sendConfirmEmail(job.data);
+        response = await this.emailService.sendConfirmEmail(job.data);
         break;
       case 'welcome':
-        response = await this.emailService._sendWelcomeEmail(job.data);
+        response = await this.emailService.sendWelcomeEmail(job.data);
         break;
       case 'newsletter_subscription':
-        response = await this.emailService._sendNewsletterSubscription(
-          job.data,
-        );
+        response = await this.emailService.sendNewsletterSubscription(job.data);
         break;
       default:
         break;

@@ -63,9 +63,6 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
         port: parseInt(process.env.REDIS_PORT) || 6379,
       },
     }),
-    BullModule.registerQueue({
-      name: 'email',
-    }),
     AuthModule,
     UserModule,
     EmailModule,
