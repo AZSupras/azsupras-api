@@ -7,7 +7,11 @@ import { NestApplicationOptions } from '@nestjs/common';
 async function bootstrap() {
   const logger = new LoggerService('Bootstrap');
   const applicationOptions: NestApplicationOptions = {
-    cors: true,
+    cors: {
+      origin: 'http://localhost:4000',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: true,
+    },
     logger: logger,
   };
   const app = await NestFactory.create(AppModule, applicationOptions);

@@ -14,7 +14,11 @@ import { EmailService } from './email/email.service';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { Email } from './email/email.entity';
 import { EmailModule } from './email/email.module';
-import { ScheduleModule } from '@nestjs/schedule';
+import { BullModule } from '@nestjs/bull';
+import { SubscriberModule } from './subscriber/subscriber.module';
+import { Subscriber } from './subscriber/subscriber.entity';
+import { SubscriberService } from './subscriber/subscriber.service';
+import { HashService } from './hash/hash.service';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -30,7 +34,7 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      entities: [Email],
+      entities: [Email, Subscriber],
       synchronize: true,
     }),
     MailerModule.forRoot({
@@ -53,13 +57,29 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
         },
       },
     }),
-    ScheduleModule.forRoot(),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT) || 6379,
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'email',
+    }),
     AuthModule,
     UserModule,
     EmailModule,
     NewsletterModule,
+    SubscriberModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LoggerService, EmailService, UserService],
+  providers: [
+    AppService,
+    LoggerService,
+    EmailService,
+    UserService,
+    SubscriberService,
+    HashService,
+  ],
 })
 export class AppModule {}

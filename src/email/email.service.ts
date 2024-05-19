@@ -5,13 +5,13 @@ import { CreateEmailDto } from './create-email.dto';
 import { Repository } from 'typeorm';
 import { Email } from './email.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Cron, CronExpression } from '@nestjs/schedule';
 
 export interface EmailVerification {
   userId: string;
 }
 
 export interface ISentMessageInfo {}
+
 @Injectable()
 export class EmailService {
   private readonly log = new Logger(EmailService.name);
@@ -59,7 +59,7 @@ export class EmailService {
   // }
 
   // send verification email
-  private async _sendConfirmEmail(
+  public async _sendConfirmEmail(
     mail: CreateEmailDto,
   ): Promise<ISentMessageInfo> {
     this.log.debug(`Sending confirmation email to ${mail.to}`);
@@ -84,7 +84,7 @@ export class EmailService {
   }
 
   // send welcome email
-  private async _sendWelcomeEmail(
+  public async _sendWelcomeEmail(
     mail: CreateEmailDto,
   ): Promise<ISentMessageInfo> {
     this.log.debug(`Sending welcome email to ${mail.to}`);
@@ -95,7 +95,8 @@ export class EmailService {
       template: 'welcome',
       context: {
         email: mail.to,
-        username: mail.context.username,
+        firstName: mail.context.firstName,
+        lastName: mail.context.lastName,
       },
     };
 
@@ -105,7 +106,38 @@ export class EmailService {
   }
 
   // send newsletter subscription email
-  private async _sendNewsletterSubscription(
+  public async _sendNewsletterSubscription(
+    mail: CreateEmailDto,
+  ): Promise<ISentMessageInfo> {
+    this.log.debug(
+      `Sending newsletter subscription email to ${mail.context.firstName} at ${mail.to}`,
+    );
+    const baseUrl = this.configService.get<string>('APP_BASE_URL');
+
+    const unsubscribeLink = `${baseUrl}/unsubscribe?email=${mail.to}&token=${mail.context.token}`;
+
+    const opts: ISendMailOptions = {
+      to: mail.to,
+      bcc: 'nd@ndboost.com',
+      subject: 'Newsletter Subscription',
+      template: 'newsletter_subscription',
+      context: {
+        email: mail.to,
+        token: mail.context.token,
+        firstName: mail.context.firstName || 'Gordon',
+        lastName: mail.context.lastName,
+        message: mail.context.message,
+        unsubscribeLink: unsubscribeLink,
+      },
+    };
+
+    const results: ISentMessageInfo = await this._send(opts);
+
+    return results;
+  }
+
+  // send newsletter subscription email
+  public async sendNewsletterSubscription(
     mail: CreateEmailDto,
   ): Promise<ISentMessageInfo> {
     this.log.debug(
@@ -133,7 +165,6 @@ export class EmailService {
     return results;
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
   // get all unsent emails from the database, loop through them, and send them, then update the email record in the database that it was sent
   public async sendUnsentEmails(): Promise<void> {
     if (this.sendingEmails === true) {

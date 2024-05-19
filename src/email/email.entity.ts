@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ISentMessageInfo } from './email.service';
+import { Subscriber } from 'src/subscriber/subscriber.entity';
 
 @Entity()
 export class Email {
@@ -54,4 +55,8 @@ export class Email {
   // deletedAt
   @Column({ type: 'timestamp', nullable: true })
   deletedAt: Date;
+
+  // one subscriber to many email relationship
+  @ManyToOne(() => Subscriber, (subscriber) => subscriber.email)
+  subscriber: Subscriber;
 }
