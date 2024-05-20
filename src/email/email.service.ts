@@ -41,7 +41,6 @@ export class EmailService {
       };
 
       const results: ISentMessageInfo = await this.mailerService.sendMail(opts);
-      console.log('results:', results);
 
       return results;
     } catch (error) {
