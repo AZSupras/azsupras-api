@@ -121,7 +121,7 @@ export class EmailService {
     );
     const baseUrl = this.configService.get<string>('API_BASE_URL');
 
-    const unsubscribeLink = `${baseUrl}/subscriber/unsubscribe?email=${mail.to}`;
+    const unsubscribeLink = `${baseUrl}/subscriber/unsubscribe?email=${mail.to}&token=${mail.context.token}`;
 
     const opts: ISendMailOptions = {
       to: mail.to,
