@@ -119,7 +119,7 @@ export class EmailService {
     this.log.debug(
       `Sending newsletter subscription email to ${mail.context.firstName} at ${mail.to}`,
     );
-    const baseUrl = this.configService.get<string>('API_BASE_URL');
+    const baseUrl = this.configService.get<string>('APP_BASE_URL');
 
     const unsubscribeLink = `${baseUrl}/subscriber/unsubscribe?email=${mail.to}&token=${mail.context.token}`;
 
