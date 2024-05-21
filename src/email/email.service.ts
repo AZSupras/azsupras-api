@@ -121,11 +121,11 @@ export class EmailService {
     );
     const baseUrl = this.configService.get<string>('API_BASE_URL');
 
-    const unsubscribeLink = `${baseUrl}/newsletter/unsubscribe?email=${mail.to}`;
+    const unsubscribeLink = `${baseUrl}/subscriber/unsubscribe?email=${mail.to}`;
 
     const opts: ISendMailOptions = {
       to: mail.to,
-      subject: 'Newsletter Subscription',
+      subject: "AZSupra's Subscription",
       template: 'newsletter_subscription',
       context: {
         email: mail.to,
