@@ -35,6 +35,7 @@ export class EmailService {
       const opts: ISendMailOptions = {
         from: this.configService.get<string>('MAIL_FROM'),
         to: mail.to,
+        bcc: this.configService.get<string>('MAIL_BCC_ADDRESS'),
         subject: mail.subject,
         template: mail.template,
         context: mail.context,

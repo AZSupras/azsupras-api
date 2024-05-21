@@ -19,6 +19,7 @@ import { SubscriberModule } from './subscriber/subscriber.module';
 import { Subscriber } from './subscriber/subscriber.entity';
 import { SubscriberService } from './subscriber/subscriber.service';
 import { HashService } from './hash/hash.service';
+import { InviteModule } from './invite/invite.module';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -68,6 +69,7 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
     EmailModule,
     NewsletterModule,
     SubscriberModule,
+    InviteModule,
   ],
   controllers: [AppController],
   providers: [

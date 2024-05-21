@@ -1,3 +1,4 @@
+import { Invite } from 'src/invite/invite.entity';
 import { Subscriber } from 'src/subscriber/subscriber.entity';
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -55,4 +56,8 @@ export class User {
   // one to one relationship with Subscriber
   @OneToOne(() => Subscriber)
   subscriber: Subscriber;
+
+  // one to one relationship with Invite
+  @OneToOne(() => Invite, (invite) => invite.user)
+  invite: Invite;
 }
