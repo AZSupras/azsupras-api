@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerService } from './logger/logger.service';
@@ -20,6 +20,12 @@ import { Subscriber } from './subscriber/subscriber.entity';
 import { SubscriberService } from './subscriber/subscriber.service';
 import { HashService } from './hash/hash.service';
 import { InviteModule } from './invite/invite.module';
+import { SeederModule } from './seeder/seeder.module';
+import { HashModule } from './hash/hash.module';
+import { UserRoleModule } from './user-role/user-role.module';
+import { SeederService } from './seeder/seeder.service';
+import { User } from './user/user.entity';
+import { UserRole } from './user-role/user-role.entity';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -35,7 +41,7 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      entities: [Email, Subscriber],
+      entities: [Email, Subscriber, User, UserRole],
       synchronize: true,
     }),
     MailerModule.forRoot({
@@ -70,10 +76,14 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
     NewsletterModule,
     SubscriberModule,
     InviteModule,
+    SeederModule,
+    HashModule,
+    UserRoleModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    SeederService,
     LoggerService,
     EmailService,
     UserService,
@@ -81,4 +91,10 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
     HashService,
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly seederService: SeederService) {}
+
+  async onModuleInit() {
+    await this.seederService.run();
+  }
+}
