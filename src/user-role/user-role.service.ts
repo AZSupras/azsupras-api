@@ -7,7 +7,7 @@ import { UserRole } from './user-role.entity';
 export class UserRoleService {
   constructor(
     @InjectRepository(UserRole)
-    private repo: Repository<UserRole>
+    private repo: Repository<UserRole>,
   ) {}
 
   async create(roleData: Partial<UserRole>): Promise<UserRole> {
@@ -23,7 +23,7 @@ export class UserRoleService {
     const role = await this.repo.findOne({
       where: {
         id,
-      }
+      },
     });
 
     if (!role) {
@@ -36,7 +36,7 @@ export class UserRoleService {
     const role = await this.repo.findOne({
       where: {
         slug,
-      }
+      },
     });
 
     if (!role) {
@@ -50,9 +50,9 @@ export class UserRoleService {
     const updatedRole = await this.repo.findOne({
       where: {
         id,
-      }
+      },
     });
-    
+
     if (!updatedRole) {
       throw new NotFoundException(`Role with ID ${id} not found`);
     }

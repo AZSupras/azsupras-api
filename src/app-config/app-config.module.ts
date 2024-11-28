@@ -5,9 +5,7 @@ import { AppConfig } from './app-config.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([AppConfig]),
-  ],
+  imports: [TypeOrmModule.forFeature([AppConfig])],
   controllers: [AppConfigController],
   exports: [AppConfigService, TypeOrmModule],
   providers: [AppConfigService],

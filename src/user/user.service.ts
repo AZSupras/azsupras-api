@@ -5,9 +5,12 @@ import { User } from './user.entity';
 import { HashService } from 'src/hash/hash.service';
 import { PublicUserDto } from './dto/public-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new LoggerService(UserService.name);
+
   constructor(
     @InjectRepository(User)
     private repo: Repository<User>,
@@ -29,8 +32,8 @@ export class UserService {
         username: true,
         roles: {
           slug: true,
-          name: true
-        }
+          name: true,
+        },
       },
       where: { isPublic: true },
     };
@@ -40,22 +43,27 @@ export class UserService {
     return results;
   }
 
-
-  public async Public_findOneByUsername(username: string, options?: FindOneOptions<User>): Promise<User> {
+  public async Public_findOneByUsername(
+    username: string,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
     const queryOptions: FindOneOptions<User> = {
       where: {
         username,
-        isPublic: true
+        isPublic: true,
       },
       ...options,
-     };
+    };
 
     const results = await this.repo.findOne(queryOptions);
 
     return results;
   }
 
-  public async findOneById(id: string, options?: FindOneOptions<User>): Promise<User> {
+  public async findOneById(
+    id: string,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
     const queryOptions: FindOneOptions<User> = {
       where: { id },
       ...options,
@@ -66,29 +74,35 @@ export class UserService {
     return results;
   }
 
-  public async findOneByEmail(email: string, options?: FindOneOptions<User>): Promise<User> {
+  public async findOneByEmail(
+    email: string,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
     const queryOptions: FindOneOptions<User> = {
       where: {
-        email
+        email,
       },
       ...options,
-     };
+    };
 
     const results = await this.repo.findOne(queryOptions);
 
     return results;
   }
 
-  public async findOneByUsername(username: string, options?: FindOneOptions<User>): Promise<User> {
+  public async findOneByUsername(
+    username: string,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
     const queryOptions: FindOneOptions<User> = {
       where: {
-        username
+        username,
       },
       select: {
         username: true,
       },
       ...options,
-     };
+    };
 
     const results = await this.repo.findOne(queryOptions);
 

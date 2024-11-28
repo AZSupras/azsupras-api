@@ -1,7 +1,14 @@
 import { Invite } from 'src/invite/invite.entity';
 import { Subscriber } from 'src/subscriber/subscriber.entity';
 import { UserRole } from 'src/user-role/user-role.entity';
-import { Column, Entity, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -50,11 +57,19 @@ export class User {
   passwordResetRequestedAt: Date;
 
   // createdAt
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', select: false })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    select: false,
+  })
   createdAt: Date;
 
   // updatedAt
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', select: false })
+  @Column({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    select: false,
+  })
   updatedAt: Date;
 
   // one to one relationship with Subscriber
@@ -65,7 +80,7 @@ export class User {
   @OneToOne(() => Invite, (invite) => invite.user)
   invite: Invite;
 
-  @ManyToMany(() => UserRole, role => role.users)
+  @ManyToMany(() => UserRole, (role) => role.users)
   @JoinTable()
   roles: UserRole[];
 }

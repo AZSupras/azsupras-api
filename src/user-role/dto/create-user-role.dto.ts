@@ -1,4 +1,4 @@
 export class CreateUserRoleDto {
-    slug: string;
-    name: string;
+  slug: string;
+  name: string;
 }

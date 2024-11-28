@@ -1,3 +1,3 @@
 export class PublicUserDto {
-    username: string;
+  username: string;
 }

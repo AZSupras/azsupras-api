@@ -1,20 +1,24 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm"
-
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class AppConfig {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ default: 'App Name'})
-    appName: string;
-    
-    @Column({ default: false })
-    registrationEnabled: boolean;
+  @Column({ default: 'App Name' })
+  appName: string;
 
-    @Column({ default: false })
-    emailVerificationRequired: boolean;
+  @Column({ default: false })
+  registrationEnabled: boolean;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @Column({ default: false })
+  emailVerificationRequired: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

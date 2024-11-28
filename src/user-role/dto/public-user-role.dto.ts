@@ -1,4 +1,4 @@
 export class PublicUserRole {
-    slug: string;
-    name: string;
+  slug: string;
+  name: string;
 }

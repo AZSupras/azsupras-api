@@ -1,6 +1,5 @@
-
 export class CreateAppConfigDto {
-    appName: string;
-    registrationEnabled: boolean;
-    emailVerificationRequired: boolean;
+  appName: string;
+  registrationEnabled: boolean;
+  emailVerificationRequired: boolean;
 }

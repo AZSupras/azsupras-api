@@ -1,7 +1,11 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { AppService } from './app.service';
 import { LoggerService } from './logger/logger.service';
-import { ConfigModuleOptions, ConfigModule, ConfigService } from '@nestjs/config';
+import {
+  ConfigModuleOptions,
+  ConfigModule,
+  ConfigService,
+} from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { join } from 'path';
@@ -26,8 +30,6 @@ import { SeederService } from './seeder/seeder.service';
 import { User } from './user/user.entity';
 import { UserRole } from './user-role/user-role.entity';
 import { AppConfigModule } from './app-config/app-config.module';
-import { AppConfig } from './app-config/app-config.entity';
-import { AppConfigService } from './app-config/app-config.service';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -95,10 +97,14 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
 })
 export class AppModule implements OnModuleInit {
   private readonly logger = new LoggerService(AppModule.name);
-  constructor(private readonly seederService: SeederService, private readonly configService: ConfigService) {}
+  constructor(
+    private readonly seederService: SeederService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async onModuleInit() {
-    const seedDatabase = this.configService.get<string>('SEED_DATABASE') || 'false';
+    const seedDatabase =
+      this.configService.get<string>('SEED_DATABASE') || 'false';
 
     if (seedDatabase === 'true') {
       await this.seederService.run();
