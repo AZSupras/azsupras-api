@@ -3,6 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { LoggerService } from './logger/logger.service';
 import { AppModule } from './app.module';
 import { NestApplicationOptions } from '@nestjs/common';
+import * as session from 'express-session';
+import { RedisStore } from 'connect-redis';
+import {createClient} from "redis"
 
 async function bootstrap() {
   const logger = new LoggerService('Bootstrap');
@@ -14,13 +17,31 @@ async function bootstrap() {
     },
     logger: logger,
   };
-  const app = await NestFactory.create(AppModule, applicationOptions);
 
+  const app = await NestFactory.create(AppModule, applicationOptions);
+  
   const config = app.get(ConfigService);
 
   const apiHost: string = config.get<string>('API_HOST') || 'localhost';
   const apiPort: number = config.get<number>('API_PORT') || 3000;
   const apiPrefix: string = config.get<string>('API_PREFIX');
+
+  const sessionSecret: string = config.get<string>('SESSION_SECRET') || 'my-secret';
+  
+  let redisClient = createClient()
+
+  redisClient.connect().catch(console.error);
+
+  const sessionStore = new RedisStore({ client: redisClient, prefix: 'session:' });
+
+  app.use(
+    session({
+      store: sessionStore,
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
 
   app.setGlobalPrefix(apiPrefix);
 

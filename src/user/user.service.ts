@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -15,7 +15,7 @@ export class UserService {
     @InjectRepository(User)
     private repo: Repository<User>,
     private hashService: HashService,
-  ) {}
+  ) { }
 
   public async findAll(): Promise<User[]> {
     const queryOptions: FindManyOptions<User> = {
