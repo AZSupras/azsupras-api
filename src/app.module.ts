@@ -1,5 +1,4 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerService } from './logger/logger.service';
 import { ConfigModuleOptions, ConfigModule, ConfigService } from '@nestjs/config';
@@ -84,7 +83,6 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
     UserRoleModule,
     AppConfigModule,
   ],
-  controllers: [AppController],
   providers: [
     AppService,
     SeederService,
