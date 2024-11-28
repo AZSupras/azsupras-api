@@ -3,6 +3,7 @@ import { AppConfigService } from './app-config.service';
 import { AppConfig } from './app-config.entity';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 import { DeleteResult } from 'typeorm';
+import { IResponse } from 'src/interfaces/IResponse';
 
 @Controller('config')
 export class AppConfigController {
@@ -11,35 +12,64 @@ export class AppConfigController {
 
   @Get()
   async getLatestConfig() {
-    const config: AppConfig|null = await this.appConfigService.getLatest();
+    const data: AppConfig|null = await this.appConfigService.getLatest();
 
-    if (!config) {
+    if (!data) {
       this.logger.warn('No app config found');
       throw new InternalServerErrorException('No app config found');
     }
 
-    return config;
+    const response : IResponse<AppConfig> = {
+      statusCode: 200,
+      message: 'Success',
+      data,
+    }
+  
+    return response;
   }
 
   @Get('all')
   async getAllConfigs() {
-    const config: AppConfig[] = await this.appConfigService.findAll();
+    const data: AppConfig[] = await this.appConfigService.findAll();
 
-    if (!config) {
+    if (!data) {
       this.logger.warn('No app config found');
       throw new InternalServerErrorException('No app config found');
     }
 
-    return config;
+    const response : IResponse<AppConfig[]> = {
+      statusCode: 200,
+      message: 'Success',
+      count: data.length,
+      data,
+    }
+  
+    return response;
   }
   
   @Post()
-  async upsert(@Body() createAppConfigDto: CreateAppConfigDto): Promise<AppConfig> {
-    return await this.appConfigService.upsert(createAppConfigDto);
+  async upsert(@Body() createAppConfigDto: CreateAppConfigDto): Promise<IResponse<AppConfig>> {
+    const data: AppConfig = await this.appConfigService.upsert(createAppConfigDto);
+
+    const response : IResponse<AppConfig> = {
+      statusCode: 200,
+      message: 'Record upserted',
+      data,
+    }
+  
+    return response;
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<DeleteResult> {
-    return await this.appConfigService.delete(id);
+  async delete(@Param('id') id: string): Promise<IResponse<DeleteResult>> {
+    const data: DeleteResult =  await this.appConfigService.delete(id);
+
+    const response : IResponse<DeleteResult> = {
+      statusCode: 200,
+      message: (data.affected && data.affected > 0) ? 'Record deleted' : 'Record not found',
+      data,
+    }
+  
+    return response;
   }
 }

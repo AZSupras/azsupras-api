@@ -101,4 +101,8 @@ export class InviteService {
 
     return invite;
   }
+
+  public async clearAll(): Promise<void> {
+    await this.repo.clear();
+  }
 }

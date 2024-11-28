@@ -199,6 +199,7 @@ export class SeederService {
                 lastName: user.lastName,
                 emailVerified: user.emailVerified,
                 emailVerifiedAt: user.emailVerifiedAt,
+                isPublic: user.isPublic,
                 roles: roles
             });
 

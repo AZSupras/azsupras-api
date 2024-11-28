@@ -23,6 +23,9 @@ export class User {
   @Column({ unique: true, nullable: true, select: false })
   email: string;
 
+  @Column({ default: true })
+  isPublic: boolean;
+
   // emailVerified
   // This field is used to determine if the user has verified their email address.
   @Column({ default: false, select: false })

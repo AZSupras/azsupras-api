@@ -7,20 +7,20 @@ import { UserRole } from './user-role.entity';
 export class UserRoleService {
   constructor(
     @InjectRepository(UserRole)
-    private roleRepository: Repository<UserRole>
+    private repo: Repository<UserRole>
   ) {}
 
   async create(roleData: Partial<UserRole>): Promise<UserRole> {
-    const role = this.roleRepository.create(roleData);
-    return this.roleRepository.save(role);
+    const role = this.repo.create(roleData);
+    return this.repo.save(role);
   }
 
   async findAll(): Promise<UserRole[]> {
-    return this.roleRepository.find();
+    return this.repo.find();
   }
 
   async findOneById(id: number): Promise<UserRole> {
-    const role = await this.roleRepository.findOne({
+    const role = await this.repo.findOne({
       where: {
         id,
       }
@@ -33,7 +33,7 @@ export class UserRoleService {
   }
 
   async findOneBySlug(slug: string): Promise<UserRole> {
-    const role = await this.roleRepository.findOne({
+    const role = await this.repo.findOne({
       where: {
         slug,
       }
@@ -46,8 +46,8 @@ export class UserRoleService {
   }
 
   async update(id: number, updateData: Partial<UserRole>): Promise<UserRole> {
-    await this.roleRepository.update(id, updateData);
-    const updatedRole = await this.roleRepository.findOne({
+    await this.repo.update(id, updateData);
+    const updatedRole = await this.repo.findOne({
       where: {
         id,
       }
@@ -60,9 +60,13 @@ export class UserRoleService {
   }
 
   async remove(id: number): Promise<void> {
-    const result = await this.roleRepository.delete(id);
+    const result = await this.repo.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Role with ID ${id} not found`);
     }
+  }
+
+  public async clearAll(): Promise<void> {
+    await this.repo.clear();
   }
 }

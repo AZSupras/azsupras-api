@@ -120,4 +120,8 @@ export class SubscriberService {
 
     return subscriber;
   }
+
+  public async clearAll(): Promise<void> {
+    await this.repo.clear();
+  }
 }

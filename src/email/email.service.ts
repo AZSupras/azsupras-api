@@ -25,7 +25,7 @@ export class EmailService {
 
   constructor(
     @InjectRepository(Email)
-    private userRepo: Repository<Email>,
+    private repo: Repository<Email>,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
   ) {}
@@ -206,9 +206,9 @@ export class EmailService {
     email.subject = newEmail.subject;
     email.context = newEmail.context;
     email.template = newEmail.template;
-    email = this.userRepo.create(email);
+    email = this.repo.create(email);
 
-    await this.userRepo.save(email);
+    await this.repo.save(email);
 
     return email;
   }
@@ -221,7 +221,7 @@ export class EmailService {
     }
 
     email = Object.assign(email, data);
-    await this.userRepo.save(email);
+    await this.repo.save(email);
     return email;
   }
 
@@ -234,7 +234,7 @@ export class EmailService {
 
     email.sent = true;
     email.sentAt = new Date();
-    await this.userRepo.save(email);
+    await this.repo.save(email);
 
     return email;
   }
@@ -247,14 +247,14 @@ export class EmailService {
     }
 
     email.sending = true;
-    await this.userRepo.save(email);
+    await this.repo.save(email);
 
     return email;
   }
 
   // find one email by email id
   public async findOne(id: string): Promise<Email> {
-    const results = await this.userRepo.findOne({
+    const results = await this.repo.findOne({
       where: {
         id: id,
       },
@@ -265,14 +265,14 @@ export class EmailService {
 
   // find all emails
   public async findAll(): Promise<Email[]> {
-    const results = await this.userRepo.find();
+    const results = await this.repo.find();
 
     return results;
   }
 
   // find first email sent to a particular email address
   public async findSubscribedByEmail(email: string): Promise<Email> {
-    const results = await this.userRepo.findOne({
+    const results = await this.repo.findOne({
       where: { to: email, template: 'newsletter_subscription' },
     });
 
@@ -281,7 +281,7 @@ export class EmailService {
 
   // find all emails sent to a particular email address
   public async findAllSubscribedByEmail(email: string): Promise<Email[]> {
-    const results = await this.userRepo.find({
+    const results = await this.repo.find({
       where: { to: email, template: 'newsletter_subscription' },
     });
 
@@ -290,14 +290,14 @@ export class EmailService {
 
   // find all emails sent to a particular email address
   public async findAllByEmail(email: string): Promise<Email[]> {
-    const results = await this.userRepo.find({ where: { to: email } });
+    const results = await this.repo.find({ where: { to: email } });
 
     return results;
   }
 
   // find all emails that have not been sent yet
   public async findUnsent(): Promise<Email[]> {
-    const results = await this.userRepo.find({
+    const results = await this.repo.find({
       where: { sent: false, sending: false },
     });
 
@@ -306,8 +306,12 @@ export class EmailService {
 
   // find all emails that have been sent
   public async findSent(): Promise<Email[]> {
-    const results = await this.userRepo.find({ where: { sent: true } });
+    const results = await this.repo.find({ where: { sent: true } });
 
     return results;
+  }
+
+  public async clearAll(): Promise<void> {
+    await this.repo.clear();
   }
 }
