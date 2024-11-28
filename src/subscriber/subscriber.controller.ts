@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Request, Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Queue } from 'bull';
 import { HashService } from 'src/hash/hash.service';
-import { IResponse } from 'src/interfaces/IResponse';
+import { IResponseWithRelation } from 'src/interfaces/IResponse';
 import { CreateSubscriberDto } from './create-subscriber.dto';
 import { SubscriberService } from './subscriber.service';
 import { Subscriber } from './subscriber.entity';
@@ -23,7 +23,7 @@ export class SubscriberController {
     let subscriber = await this.subscriberService.findOneByEmail(email);
 
     if (!subscriber) {
-      const response: IResponse<Subscriber> = {
+      const response: IResponseWithRelation<Subscriber> = {
         statusCode: 404,
         message: 'Subscriber not found',
         data: null,
@@ -33,7 +33,7 @@ export class SubscriberController {
     }
 
     if (subscriber.unsubscribeToken !== token) {
-      const response: IResponse<Subscriber> = {
+      const response: IResponseWithRelation<Subscriber> = {
         statusCode: 400,
         message: 'Invalid token',
         data: null,
@@ -44,7 +44,7 @@ export class SubscriberController {
 
     subscriber = await this.subscriberService.unsubscribe(subscriber.id);
 
-    const response: IResponse<Subscriber> = {
+    const response: IResponseWithRelation<Subscriber> = {
       statusCode: 200,
       message: 'Unsubscribed successfully',
       data: subscriber,
@@ -57,13 +57,13 @@ export class SubscriberController {
   async subscribe(
     @Request() req,
     @Body() newsletterSubscribeDto: CreateSubscriberDto,
-  ): Promise<IResponse<Subscriber>> {
+  ): Promise<IResponseWithRelation<Subscriber>> {
     let subscriber = await this.subscriberService.findOneByEmail(
       newsletterSubscribeDto.email,
     );
 
     if (subscriber) {
-      const response: IResponse<Subscriber> = {
+      const response: IResponseWithRelation<Subscriber> = {
         statusCode: 400,
         message:
           'Email already subscribed, check your email inbox and spam folder.',
@@ -93,7 +93,7 @@ export class SubscriberController {
       },
     });
 
-    const response: IResponse<Subscriber> = {
+    const response: IResponseWithRelation<Subscriber> = {
       statusCode: 201,
       message: 'Subscription successful',
       data: subscriber,

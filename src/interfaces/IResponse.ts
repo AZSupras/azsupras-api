@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export interface IResponse<T = any> {
+export interface IResponseWithRelation<T = any> extends IResponse {
+  count?: number;
+  data?: T;
+}
+
+export interface IResponse {
   statusCode: number;
   message: string;
-  count?: number;
-  data: T;
 }

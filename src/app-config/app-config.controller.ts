@@ -12,7 +12,7 @@ import { AppConfigService } from './app-config.service';
 import { AppConfig } from './app-config.entity';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 import { DeleteResult } from 'typeorm';
-import { IResponse } from 'src/interfaces/IResponse';
+import { IResponseWithRelation } from 'src/interfaces/IResponse';
 
 @Controller('config')
 export class AppConfigController {
@@ -28,7 +28,7 @@ export class AppConfigController {
       throw new InternalServerErrorException('No app config found');
     }
 
-    const response: IResponse<AppConfig> = {
+    const response: IResponseWithRelation<AppConfig> = {
       statusCode: 200,
       message: 'Success',
       data,
@@ -46,7 +46,7 @@ export class AppConfigController {
       throw new InternalServerErrorException('No app config found');
     }
 
-    const response: IResponse<AppConfig[]> = {
+    const response: IResponseWithRelation<AppConfig[]> = {
       statusCode: 200,
       message: 'Success',
       count: data.length,
@@ -59,11 +59,11 @@ export class AppConfigController {
   @Post()
   async upsert(
     @Body() createAppConfigDto: CreateAppConfigDto,
-  ): Promise<IResponse<AppConfig>> {
+  ): Promise<IResponseWithRelation<AppConfig>> {
     const data: AppConfig =
       await this.appConfigService.upsert(createAppConfigDto);
 
-    const response: IResponse<AppConfig> = {
+    const response: IResponseWithRelation<AppConfig> = {
       statusCode: 200,
       message: 'Record upserted',
       data,
@@ -73,10 +73,10 @@ export class AppConfigController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<IResponse<DeleteResult>> {
+  async delete(@Param('id') id: string): Promise<IResponseWithRelation<DeleteResult>> {
     const data: DeleteResult = await this.appConfigService.delete(id);
 
-    const response: IResponse<DeleteResult> = {
+    const response: IResponseWithRelation<DeleteResult> = {
       statusCode: 200,
       message:
         data.affected && data.affected > 0
