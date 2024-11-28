@@ -9,6 +9,9 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { eachOfSeries } from 'async';
+import { CreateAppConfigDto } from 'src/app-config/dto/create-app-config.dto';
+import { AppConfigService } from 'src/app-config/app-config.service';
+import { AppConfig } from 'src/app-config/app-config.entity';
 
 export type SeedUserDto = CreateUserDto & {
     roleSlugs: string[],
@@ -19,6 +22,7 @@ export type SeedUserDto = CreateUserDto & {
 export type SeedData = {
     userRoles: CreateUserRoleDto[],
     users: SeedUserDto[],
+    appConfig: CreateAppConfigDto,
 }
 
 const seedData = {
@@ -44,7 +48,12 @@ const seedData = {
             isPublic: false,
             roleSlugs: ['admin', 'user'],
         },
-    ]
+    ],
+    appConfig: {
+        appName: 'My App',
+        registrationEnabled: false,
+        emailVerificationRequired: false,
+    }
 }
 
 @Injectable()
@@ -58,21 +67,39 @@ export class SeederService {
         private readonly roleRepository: Repository<UserRole>,
         private readonly hashService: HashService,
         private readonly configService: ConfigService,
+        private readonly appConfigService: AppConfigService,
     ) {}
 
-    public async run() {
-        const seedDatabase: boolean = this.configService.get<boolean>('SEED_DATABASE') || false;
+    public async upsertAppConfig() {
+        const appConfig: AppConfig = await this.appConfigService.getLatest();
+    
+        if (!appConfig) {
+          this.logger.log('No app config found, creating a new one');
+    
+          await this.appConfigService.upsert({
+            appName: "My App",
+            registrationEnabled: false,
+            emailVerificationRequired: false,
+          });
+    
+        }
+    }
 
-        if (!seedDatabase) {
+    public async run() {
+        await this.upsertAppConfig();
+        
+        const seedDatabase: string = this.configService.get<string>('SEED_DATABASE') || 'false';
+        if (seedDatabase !== 'true') {
             this.logger.debug('Database seeding is disabled. Set the SEED_DATABASE environment variable to true to enable seeding.');
             return;
-        }
+        } else {
 
-        // seed userRoles, pass in the user roles to seed, and return the user roles that were created.
-        await this._seedUserRoles(seedData.userRoles);
-        // then seed users
-        await this._seedUsers(seedData.users);
-        // then print a message that seeding is complete with the number of users and roles created.
+            // seed userRoles, pass in the user roles to seed, and return the user roles that were created.
+            await this._seedUserRoles(seedData.userRoles);
+            // then seed users
+            await this._seedUsers(seedData.users);
+            // then print a message that seeding is complete with the number of users and roles created.
+        }
     }
 
     private async _seedUserRoles(userRoles: CreateUserRoleDto[]) {
