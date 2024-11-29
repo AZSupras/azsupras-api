@@ -1,7 +1,9 @@
 import { ValidationPipe, HttpStatus, INestApplication } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
-import * as session from 'express-session';
+import {RedisStore} from "connect-redis"
+import * as session from "express-session"
+import {createClient} from "redis"
 import * as passport from 'passport';
 import * as connectPgSimple from 'connect-pg-simple';
 
@@ -12,6 +14,8 @@ export function setup(app: INestApplication): INestApplication {
   const config = app.get(ConfigService);
   const appSecret: string = config.get<string>('APP_SECRET');
   const nodeEnv: string = config.get<string>('NODE_ENV');
+  const redisHost: string = config.get<string>('REDIS_HOST') || 'localhost';
+  const redisPort: number = config.get<number>('REDIS_PORT') || 6379;
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -23,19 +27,33 @@ export function setup(app: INestApplication): INestApplication {
 
   app.use(cookieParser(appSecret));
 
+  const redisSessionClient = createClient({
+    url: `redis://${redisHost}:${redisPort}`,
+    database: 0,
+    name: 'session',
+  })
+  redisSessionClient.connect()
+    .then(() => {
+      console.log('Redis session client connected');
+    })
+    .catch(console.error);
+
   const sessionStore = (nodeEnv === 'production')
-    ? new (connectPgSimple(session))()
-    : new session.MemoryStore();
-    
+    ? new (connectPgSimple(session))({
+      conString: config.get<string>('DATABASE_URL'),
+      createTableIfMissing: true,
+    })
+    : new RedisStore({
+      client: redisSessionClient,
+    });
+    // : new session.MemoryStore();
+
   app.use(
     session({
       secret: appSecret as string,
       resave: false,
       saveUninitialized: false,
-      store: new (connectPgSimple(session))({
-        conString: config.get<string>('DATABASE_URL'),
-        createTableIfMissing: true,
-      }),
+      store: sessionStore,
       cookie: {
         httpOnly: true,
         signed: true,

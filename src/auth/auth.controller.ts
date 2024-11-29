@@ -58,7 +58,7 @@ import { GuestGuard } from './guards/guest.guard';
     }
 
     @Get('logout')
-    @UseGuards(LocalAuthGuard)
+    @UseGuards(AuthGuard)
     async logout(@Req() request: Request): Promise<IResponse> {
       await this.authService.logout(request);
       

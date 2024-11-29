@@ -46,8 +46,8 @@ const schedulerConfig: BullModuleOptions = {
   name: 'azsupras:scheduler',
   redis: {
     host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT) || 6379,
-    
+    port: parseInt(process.env.REDIS_PORT) || 6379,    
+    db: 0,
   }
 };
 
