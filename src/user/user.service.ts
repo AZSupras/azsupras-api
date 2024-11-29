@@ -7,6 +7,7 @@ import { PublicUserDto } from './dto/public-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoggerService } from 'src/logger/logger.service';
 import { UserRole } from 'src/user-role/user-role.entity';
+import { adjectives, nouns } from './randomUserData';
 
 
 @Injectable()
@@ -22,31 +23,6 @@ export class UserService {
   ) { }
 
   public generateRandomUsername(): string {
-    const adjectives = [
-      'Adventurous', 'Brave', 'Calm', 'Delightful', 'Eager', 'Faithful', 'Gentle', 'Happy', 'Inventive', 'Jolly',
-      'Kind', 'Lively', 'Merry', 'Nice', 'Obedient', 'Proud', 'Quiet', 'Relieved', 'Silly', 'Thankful',
-      'Victorious', 'Witty', 'Zealous', 'Angry', 'Bewildered', 'Clumsy', 'Defeated', 'Embarrassed', 'Fierce',
-      'Grumpy', 'Helpless', 'Itchy', 'Jealous', 'Lazy', 'Mysterious', 'Nervous', 'Obnoxious', 'Panicky', 'Repulsive',
-      'Scary', 'Thoughtless', 'Uptight', 'Worried', 'Agreeable', 'Brave', 'Calm', 'Delightful', 'Eager', 'Faithful',
-      'Gentle', 'Happy', 'Inventive', 'Jolly', 'Kind', 'Lively', 'Merry', 'Nice', 'Obedient', 'Proud', 'Quiet',
-      'Relieved', 'Silly', 'Thankful', 'Victorious', 'Witty', 'Zealous', 'Angry', 'Bewildered', 'Clumsy', 'Defeated',
-      'Embarrassed', 'Fierce', 'Grumpy', 'Helpless', 'Itchy', 'Jealous', 'Lazy', 'Mysterious', 'Nervous', 'Obnoxious',
-      'Panicky', 'Repulsive', 'Scary', 'Thoughtless', 'Uptight', 'Worried', 'Adventurous', 'Brave', 'Calm', 'Delightful',
-      'Eager', 'Faithful', 'Gentle', 'Happy', 'Inventive', 'Jolly'
-    ];
-    
-    const nouns = [
-      'Tiger', 'Eagle', 'Shark', 'Lion', 'Panther', 'Wolf', 'Bear', 'Fox', 'Hawk', 'Falcon',
-      'Leopard', 'Jaguar', 'Cheetah', 'Cougar', 'Lynx', 'Bobcat', 'Ocelot', 'Puma', 'Hyena', 'Jackal',
-      'Coyote', 'Dingo', 'Otter', 'Beaver', 'Raccoon', 'Skunk', 'Badger', 'Weasel', 'Mink', 'Ferret',
-      'Squirrel', 'Chipmunk', 'Hedgehog', 'Porcupine', 'Armadillo', 'Sloth', 'Anteater', 'Aardvark', 'Platypus', 'Kangaroo',
-      'Wallaby', 'Koala', 'Possum', 'Wombat', 'Tasmanian', 'Devil', 'Mongoose', 'Meerkat', 'Lemur', 'Monkey',
-      'Gorilla', 'Chimpanzee', 'Orangutan', 'Baboon', 'Gibbon', 'Macaque', 'Mandrill', 'Tamarin', 'Capuchin', 'Saki',
-      'Howler', 'Spider', 'Squirrel', 'Marmoset', 'Tarsier', 'Aye-aye', 'Loris', 'Galago', 'Bushbaby', 'Pangolin',
-      'Elephant', 'Rhinoceros', 'Hippopotamus', 'Giraffe', 'Zebra', 'Horse', 'Donkey', 'Mule', 'Camel', 'Llama',
-      'Alpaca', 'Vicuna', 'Guanaco', 'Buffalo', 'Bison', 'Yak', 'Cow', 'Bull', 'Ox', 'Goat'
-    ];
-
     const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
     const randomNumber = Math.floor(Math.random() * 1000);

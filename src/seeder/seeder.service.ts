@@ -12,60 +12,10 @@ import { eachOfSeries } from 'async';
 import { CreateAppConfigDto } from 'src/app-config/dto/create-app-config.dto';
 import { AppConfigService } from 'src/app-config/app-config.service';
 import { AppConfig } from 'src/app-config/app-config.entity';
-
-export type SeedUserDto = CreateUserDto & {
-  roleSlugs: string[];
-  emailVerifiedAt?: Date | null;
-  emailVerified: boolean;
-};
-
-export type SeedData = {
-  userRoles: CreateUserRoleDto[];
-  users: SeedUserDto[];
-  appConfig: CreateAppConfigDto;
-};
-
-const seedData = {
-  userRoles: [
-    {
-      slug: 'admin',
-      name: 'Admin',
-    },
-    {
-      slug: 'user',
-      name: 'User',
-    },
-  ],
-  users: [
-    {
-      username: 'admin',
-      password: 'password',
-      email: 'gordonfreeman@test.com',
-      emailVerified: true,
-      emailVerifiedAt: new Date(),
-      firstName: 'Gordon',
-      lastName: 'Freeman',
-      isPublic: false,
-      roleSlugs: ['admin', 'user'],
-    },
-  ],
-  appConfig: {
-    appName: 'My App',
-    registrationEnabled: false,
-    emailVerificationRequired: false,
-    passwordResetEnabled: false,
-    emailLoginEnabled: true,
-    passwordMinLength: 8,
-    passwordAlphRequired: false,
-    passwordNumRequired: false,
-    passwordSpecialCharRequired: false,
-  },
-};
+import SeedData, { SeedUserDto } from './SeederData';
 
 @Injectable()
 export class SeederService {
-  private readonly logger = new LoggerService(SeederService.name);
-
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
@@ -74,7 +24,10 @@ export class SeederService {
     private readonly hashService: HashService,
     private readonly configService: ConfigService,
     private readonly appConfigService: AppConfigService,
-  ) {}
+    private readonly logger: LoggerService,
+  ) {
+    this.logger.setContext(SeederService.name);
+  }
 
   public async upsertAppConfig() {
     const appConfig: AppConfig = await this.appConfigService.getLatest();
@@ -102,9 +55,9 @@ export class SeederService {
       return;
     } else {
       // seed userRoles, pass in the user roles to seed, and return the user roles that were created.
-      await this._seedUserRoles(seedData.userRoles);
+      await this._seedUserRoles(SeedData.userRoles);
       // then seed users
-      await this._seedUsers(seedData.users);
+      await this._seedUsers(SeedData.users);
       // then print a message that seeding is complete with the number of users and roles created.
     }
   }

@@ -16,7 +16,7 @@ import { EmailService } from './email/email.service';
 import { NewsletterModule } from './newsletter/newsletter.module';
 import { Email } from './email/email.entity';
 import { EmailModule } from './email/email.module';
-import { BullModule } from '@nestjs/bull';
+import { BullModule, BullModuleOptions, BullRootModuleOptions } from '@nestjs/bull';
 import { SubscriberModule } from './subscriber/subscriber.module';
 import { Subscriber } from './subscriber/subscriber.entity';
 import { SubscriberService } from './subscriber/subscriber.service';
@@ -29,6 +29,7 @@ import { SeederService } from './seeder/seeder.service';
 import { User } from './user/user.entity';
 import { UserRole } from './user-role/user-role.entity';
 import { AppConfigModule } from './app-config/app-config.module';
+import { LoggerModule } from './logger/logger.module';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -37,9 +38,19 @@ const configModuleOptions: ConfigModuleOptions = {
 const emailTemplatesDirectory = join(__dirname, 'email/templates');
 console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
 
+const schedulerConfig: BullModuleOptions = {
+  name: 'azsupras:scheduler',
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT) || 6379,
+    
+  }
+};
+
 @Module({
   imports: [
     ConfigModule.forRoot(configModuleOptions),
+    LoggerModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
@@ -67,12 +78,7 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
         },
       },
     }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT) || 6379,
-      },
-    }),
+    BullModule.forRoot(schedulerConfig),
     UserModule,
     EmailModule,
     NewsletterModule,

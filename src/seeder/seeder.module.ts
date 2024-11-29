@@ -6,10 +6,12 @@ import { SeederService } from './seeder.service';
 import { HashService } from 'src/hash/hash.service';
 import { HashModule } from 'src/hash/hash.module';
 import { AppConfigModule } from 'src/app-config/app-config.module';
+import { LoggerModule } from 'src/logger/logger.module';
 
 @Module({
   imports: [
     HashModule,
+    LoggerModule,
     AppConfigModule,
     TypeOrmModule.forFeature([User, UserRole]),
   ],
