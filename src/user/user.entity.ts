@@ -24,7 +24,7 @@ export class User {
   @Column({ nullable: true })
   firstName: string;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
   lastName: string;
 
   @Column({ unique: true, nullable: true, select: false })
@@ -83,4 +83,5 @@ export class User {
   @ManyToMany(() => UserRole, (role) => role.users)
   @JoinTable()
   roles: UserRole[];
+
 }

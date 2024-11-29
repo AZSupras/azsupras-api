@@ -7,7 +7,6 @@ import {
   ConfigService,
 } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './auth/auth.module';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -74,7 +73,6 @@ console.log('emailTemplatesDirectory:', emailTemplatesDirectory);
         port: parseInt(process.env.REDIS_PORT) || 6379,
       },
     }),
-    AuthModule,
     UserModule,
     EmailModule,
     NewsletterModule,

@@ -62,7 +62,7 @@ export class SeederService {
 
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userRepo: Repository<User>,
     @InjectRepository(UserRole)
     private readonly roleRepository: Repository<UserRole>,
     private readonly hashService: HashService,
@@ -191,7 +191,7 @@ export class SeederService {
       `Checking if user '${user.username}' exists in the database.`,
     );
     // see if the user exists in the database.
-    let dbUser: User | null = await this.userRepository.findOne({
+    let dbUser: User | null = await this.userRepo.findOne({
       where: {
         username: user.username,
       },
@@ -208,19 +208,19 @@ export class SeederService {
         .where('roles.slug IN (:...slugs)', { slugs: user.roleSlugs })
         .getMany();
 
-      dbUser = this.userRepository.create({
+      dbUser = this.userRepo.create({
         username: user.username,
         password: hash,
-        email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        email: user.email,
         emailVerified: user.emailVerified,
         emailVerifiedAt: user.emailVerifiedAt,
         isPublic: user.isPublic,
-        roles: roles,
+        roles: roles
       });
 
-      dbUser = await this.userRepository.save(dbUser);
+      dbUser = await this.userRepo.save(dbUser);
       this.logger.log(
         `User '${dbUser.username}' has been created with password '${user.password}'.`,
       );

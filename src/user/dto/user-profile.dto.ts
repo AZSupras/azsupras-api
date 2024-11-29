@@ -5,6 +5,7 @@ export class UserProfileDto {
     roles: string[];
 
     firstName?: string;
+    lastName?: string;
     email?: string;
 
     constructor(user: Partial<User>) {
@@ -12,6 +13,7 @@ export class UserProfileDto {
         this.roles = user.roles.map(role => role.slug);
 
         this.firstName = user.firstName;
+        this.lastName = user.lastName;        
         this.email = user.email;
     }
 }

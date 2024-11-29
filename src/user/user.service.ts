@@ -6,6 +6,7 @@ import { HashService } from 'src/hash/hash.service';
 import { PublicUserDto } from './dto/public-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoggerService } from 'src/logger/logger.service';
+import { UserRole } from 'src/user-role/user-role.entity';
 
 @Injectable()
 export class UserService {
@@ -14,12 +15,14 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private repo: Repository<User>,
+    @InjectRepository(UserRole)
+    private roleRepo: Repository<UserRole>,
     private hashService: HashService,
   ) { }
 
   public async findAll(): Promise<User[]> {
     const queryOptions: FindManyOptions<User> = {
-      relations: ['roles'],
+      relations: ['roles', 'profile'],
     };
     const results = await this.repo.find(queryOptions);
 
@@ -110,17 +113,23 @@ export class UserService {
   }
 
   // create a new user
-  public async create(newUser: CreateUserDto): Promise<User> {
-    let user: User = new User();
+  public async create(newUserDto: CreateUserDto): Promise<User> {
+    const roles = await this.roleRepo
+    .createQueryBuilder('roles')
+    .where('roles.slug IN (:...slugs)', { slugs: newUserDto.roleSlugs })
+    .getMany();
 
-    user.username = newUser.username;
-    user.email = newUser.email;
-    user.firstName = newUser.firstName;
-    user.lastName = newUser.lastName;
-    user.password = this.hashService.hashSync(newUser.password);
-    user = this.repo.create(user);
+    const newUser: Partial<User> = {
+      username: newUserDto.username,
+      email: newUserDto.email,
+      password: this.hashService.hashSync(newUserDto.password),
+      roles: roles,
+    };
 
-    await this.repo.save(user);
+    let user: User = await this.repo.create(newUser);
+    user = await this.repo.save(user);
+
+    user = await this.findOneById(user.id);
 
     return user;
   }
