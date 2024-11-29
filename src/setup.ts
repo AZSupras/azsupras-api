@@ -6,8 +6,13 @@ import * as passport from 'passport';
 import * as connectPgSimple from 'connect-pg-simple';
 
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 
 export function setup(app: INestApplication): INestApplication {
+  const config = app.get(ConfigService);
+  const appSecret: string = config.get<string>('APP_SECRET');
+  const nodeEnv: string = config.get<string>('NODE_ENV');
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -16,22 +21,26 @@ export function setup(app: INestApplication): INestApplication {
     }),
   );
 
-  app.use(cookieParser(process.env.APP_SECRET));
+  app.use(cookieParser(appSecret));
 
+  const sessionStore = (nodeEnv === 'production')
+    ? new (connectPgSimple(session))()
+    : new session.MemoryStore();
+    
   app.use(
     session({
-      secret: process.env.APP_SECRET as string,
+      secret: appSecret as string,
       resave: false,
       saveUninitialized: false,
-      store:
-        process.env.NODE_ENV === 'production'
-          ? new (connectPgSimple(session))()
-          : new session.MemoryStore(),
+      store: new (connectPgSimple(session))({
+        conString: config.get<string>('DATABASE_URL'),
+        createTableIfMissing: true,
+      }),
       cookie: {
         httpOnly: true,
         signed: true,
         sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production',
+        secure: nodeEnv === 'production',
       },
     }),
   );

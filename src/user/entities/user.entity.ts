@@ -2,6 +2,8 @@ import { Invite } from 'src/invite/invite.entity';
 import { Subscriber } from 'src/subscriber/subscriber.entity';
 import { UserRole } from 'src/user-role/user-role.entity';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinTable,
@@ -9,6 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import * as bcrypt from 'bcryptjs';
 
 @Entity()
 export class User {
@@ -22,13 +25,13 @@ export class User {
   password: string;
 
   @Column({ nullable: true })
-  firstName: string;
+  firstName?: string|null;
 
   @Column({ nullable: true })
-  lastName: string;
+  lastName?: string|null;
 
   @Column({ unique: true, nullable: true, select: false })
-  email: string;
+  email?: string|null;
 
   @Column({ default: true })
   isPublic: boolean;
@@ -84,4 +87,21 @@ export class User {
   @JoinTable()
   roles: UserRole[];
 
+  constructor(data: Partial<User> = {}) {
+    Object.assign(this, data);
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassowrd(): Promise<void> {
+    const salt = await bcrypt.genSalt(10);
+
+    if (!/^\$2[abxy]?\$\d+\$/.test(this.password)) {
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+  }
+
+  async checkPassword(plainPassword: string): Promise<boolean> {
+    return await bcrypt.compare(plainPassword, this.password);
+  }
 }

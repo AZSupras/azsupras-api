@@ -6,7 +6,7 @@ import { LoggerService } from 'src/logger/logger.service';
 import { CreateUserRoleDto } from 'src/user-role/dto/create-user-role.dto';
 import { UserRole } from 'src/user-role/user-role.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { eachOfSeries } from 'async';
 import { CreateAppConfigDto } from 'src/app-config/dto/create-app-config.dto';

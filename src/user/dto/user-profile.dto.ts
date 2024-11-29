@@ -1,19 +1,14 @@
-import { User } from "../user.entity";
+import { UserRole } from "src/user-role/user-role.entity";
+import { User } from "../entities/user.entity";
 
-export class UserProfileDto {
+export class IUser {
     username: string;
     roles: string[];
-
-    firstName?: string;
-    lastName?: string;
-    email?: string;
+    isAdmin: boolean;
 
     constructor(user: Partial<User>) {
         this.username = user.username;
-        this.roles = user.roles.map(role => role.slug);
-
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;        
-        this.email = user.email;
+        this.roles = user.roles.map((role: UserRole) => role.slug);
+        this.isAdmin = this.roles.includes('admin');
     }
 }

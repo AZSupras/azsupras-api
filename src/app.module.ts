@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { UserService } from './user/user.service';
+import { UserService } from './user/services/user.service';
 import { UserModule } from './user/user.module';
 import { EmailService } from './email/email.service';
 import { NewsletterModule } from './newsletter/newsletter.module';
@@ -26,13 +26,17 @@ import { SeederModule } from './seeder/seeder.module';
 import { HashModule } from './hash/hash.module';
 import { UserRoleModule } from './user-role/user-role.module';
 import { SeederService } from './seeder/seeder.service';
-import { User } from './user/user.entity';
+import { User } from './user/entities/user.entity';
 import { UserRole } from './user-role/user-role.entity';
 import { AppConfigModule } from './app-config/app-config.module';
 import { LoggerModule } from './logger/logger.module';
+import { AuthModule } from './auth/auth.module';
+import { TerminusModule } from '@nestjs/terminus';
+import { HealthController } from './health.controller';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
+  envFilePath: ['.env', '.env.local'],
 };
 
 const emailTemplatesDirectory = join(__dirname, 'email/templates');
@@ -49,6 +53,7 @@ const schedulerConfig: BullModuleOptions = {
 
 @Module({
   imports: [
+    TerminusModule,
     ConfigModule.forRoot(configModuleOptions),
     LoggerModule,
     TypeOrmModule.forRoot({
@@ -88,6 +93,7 @@ const schedulerConfig: BullModuleOptions = {
     HashModule,
     UserRoleModule,
     AppConfigModule,
+    AuthModule,
   ],
   providers: [
     AppService,
@@ -98,6 +104,7 @@ const schedulerConfig: BullModuleOptions = {
     SubscriberService,
     HashService,
   ],
+  controllers: [HealthController],
 })
 export class AppModule implements OnModuleInit {
   private readonly logger = new LoggerService(AppModule.name);

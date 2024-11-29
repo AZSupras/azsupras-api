@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { HashService } from 'src/hash/hash.service';
 import { Repository } from 'typeorm';
 import { Invite } from './invite.entity';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { randomBytes } from 'crypto';

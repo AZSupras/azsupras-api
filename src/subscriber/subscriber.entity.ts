@@ -1,5 +1,5 @@
 import { Email } from 'src/email/email.entity';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   Entity,

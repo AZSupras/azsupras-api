@@ -19,6 +19,13 @@ export class UserRoleService {
     return this.repo.find();
   }
 
+  async findManyBySlugs(slugs: string[]): Promise<UserRole[]> {
+    return await this.repo
+    .createQueryBuilder('roles')
+    .where('roles.slug IN (:...slugs)', { slugs })
+    .getMany();
+  }
+
   async findOneById(id: number): Promise<UserRole> {
     const role = await this.repo.findOne({
       where: {

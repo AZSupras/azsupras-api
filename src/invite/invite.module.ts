@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { InviteService } from './invite.service';
 import { InviteController } from './invite.controller';
-import { User } from 'src/user/user.entity';
+import { User } from 'src/user/entities/user.entity';
 import { BullModule } from '@nestjs/bull';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Subscriber } from 'rxjs';

@@ -1,17 +1,24 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { UserService } from './user.service';
-import { PublicUserDto } from './dto/public-user.dto';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { UserService } from '../services/user.service';
+import { PublicUserDto } from '../dto/public-user.dto';
 import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { User } from '../entities/user.entity';
+import { JWTAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { AuthUser } from '../decorators/user.decorator';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { IsAdminGuard } from 'src/auth/guards/is-admin.guard';
 
-@Controller(['user', 'u'])
+@Controller(['user'])
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async getAll_Public() {
-    const data: PublicUserDto[] = await this.userService.Public_findAll();
+  @UseGuards(AuthGuard, IsAdminGuard)
+  async getAll(@AuthUser() user: User): Promise<IResponseWithRelation<User[]>> {
+    const data: User[] = await this.userService.findAll();
 
-    const results: IResponseWithRelation<PublicUserDto[]> = {
+    const results: IResponseWithRelation<User[]> = {
       statusCode: 200,
       message: 'Success',
       count: data.length,
@@ -34,12 +41,13 @@ export class UserController {
     return results;
   }
 
+  @UseGuards(LocalAuthGuard)
   @Get(':username')
-  async getOneByUsername_Public(@Param('username') username: string) {
-    const data: PublicUserDto =
-      await this.userService.Public_findOneByUsername(username);
+  async getOneByUsername(@Param('username') username: string) {
+    const data: User =
+      await this.userService.findOneByUsername(username);
 
-    const results: IResponseWithRelation<PublicUserDto> = {
+    const results: IResponseWithRelation<User> = {
       statusCode: 200,
       message: 'Success',
       data,
