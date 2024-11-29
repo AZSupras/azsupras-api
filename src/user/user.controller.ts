@@ -21,12 +21,40 @@ export class UserController {
     return results;
   }
 
+  @Get('randomUsername')
+  async generateRandomUsername() {
+    const data: string = this.userService.generateRandomUsername();
+
+    const results: IResponseWithRelation<string> = {
+      statusCode: 200,
+      message: 'Success',
+      data,
+    };
+
+    return results;
+  }
+
   @Get(':username')
   async getOneByUsername_Public(@Param('username') username: string) {
     const data: PublicUserDto =
       await this.userService.Public_findOneByUsername(username);
 
     const results: IResponseWithRelation<PublicUserDto> = {
+      statusCode: 200,
+      message: 'Success',
+      data,
+    };
+
+    return results;
+  }
+
+  @Get('checkAvailable/:username')
+  async checkUsernameAvailability(@Param('username') username: string) {
+    const data: boolean = await this.userService.checkUsernameAvailability(
+      username,
+    );
+
+    const results: IResponseWithRelation<boolean> = {
       statusCode: 200,
       message: 'Success',
       data,

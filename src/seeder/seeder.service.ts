@@ -53,6 +53,12 @@ const seedData = {
     appName: 'My App',
     registrationEnabled: false,
     emailVerificationRequired: false,
+    passwordResetEnabled: false,
+    emailLoginEnabled: true,
+    passwordMinLength: 8,
+    passwordAlphRequired: false,
+    passwordNumRequired: false,
+    passwordSpecialCharRequired: false,
   },
 };
 

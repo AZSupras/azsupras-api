@@ -16,6 +16,7 @@ import { HashService } from 'src/hash/hash.service';
     }),
   ],
   providers: [InviteService, HashService],
+  exports: [InviteService, TypeOrmModule],
   controllers: [InviteController],
 })
 export class InviteModule {}

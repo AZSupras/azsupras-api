@@ -6,6 +6,7 @@ import { Invite } from './invite.entity';
 import { User } from 'src/user/user.entity';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class InviteService {
@@ -40,12 +41,29 @@ export class InviteService {
   public async create(): Promise<Invite> {
     let invite: Invite = new Invite();
 
-    invite.code = this.hashService.hashSync(new Date().toISOString());
+    invite.code = await this._generateUniqueCode(16)
     invite = this.repo.create(invite);
 
     await this.repo.save(invite);
 
     return invite;
+  }
+
+  private _generateRandomAlphanumeric(length: number): string {
+    return randomBytes(length / 2).toString('hex');
+  }
+
+  private async _isCodeUnique(code: string): Promise<boolean> {
+    const count = await this.repo.count({ where: { code } });
+    return count === 0;
+  }
+
+  private async _generateUniqueCode(length: number = 16): Promise<string> {
+    let code: string;
+    do {
+      code = this._generateRandomAlphanumeric(length);
+    } while (!(await this._isCodeUnique(code)));
+    return code;
   }
 
   // create many invites
@@ -54,7 +72,7 @@ export class InviteService {
 
     for (let i = 0; i < count; i++) {
       const invite: Invite = new Invite();
-      invite.code = this.hashService.hashSync(new Date().toISOString());
+      invite.code = await this._generateUniqueCode();
       invites.push(invite);
     }
 

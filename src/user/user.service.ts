@@ -8,6 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoggerService } from 'src/logger/logger.service';
 import { UserRole } from 'src/user-role/user-role.entity';
 
+
 @Injectable()
 export class UserService {
   private readonly logger = new LoggerService(UserService.name);
@@ -19,6 +20,38 @@ export class UserService {
     private roleRepo: Repository<UserRole>,
     private hashService: HashService,
   ) { }
+
+  public generateRandomUsername(): string {
+    const adjectives = [
+      'Adventurous', 'Brave', 'Calm', 'Delightful', 'Eager', 'Faithful', 'Gentle', 'Happy', 'Inventive', 'Jolly',
+      'Kind', 'Lively', 'Merry', 'Nice', 'Obedient', 'Proud', 'Quiet', 'Relieved', 'Silly', 'Thankful',
+      'Victorious', 'Witty', 'Zealous', 'Angry', 'Bewildered', 'Clumsy', 'Defeated', 'Embarrassed', 'Fierce',
+      'Grumpy', 'Helpless', 'Itchy', 'Jealous', 'Lazy', 'Mysterious', 'Nervous', 'Obnoxious', 'Panicky', 'Repulsive',
+      'Scary', 'Thoughtless', 'Uptight', 'Worried', 'Agreeable', 'Brave', 'Calm', 'Delightful', 'Eager', 'Faithful',
+      'Gentle', 'Happy', 'Inventive', 'Jolly', 'Kind', 'Lively', 'Merry', 'Nice', 'Obedient', 'Proud', 'Quiet',
+      'Relieved', 'Silly', 'Thankful', 'Victorious', 'Witty', 'Zealous', 'Angry', 'Bewildered', 'Clumsy', 'Defeated',
+      'Embarrassed', 'Fierce', 'Grumpy', 'Helpless', 'Itchy', 'Jealous', 'Lazy', 'Mysterious', 'Nervous', 'Obnoxious',
+      'Panicky', 'Repulsive', 'Scary', 'Thoughtless', 'Uptight', 'Worried', 'Adventurous', 'Brave', 'Calm', 'Delightful',
+      'Eager', 'Faithful', 'Gentle', 'Happy', 'Inventive', 'Jolly'
+    ];
+    
+    const nouns = [
+      'Tiger', 'Eagle', 'Shark', 'Lion', 'Panther', 'Wolf', 'Bear', 'Fox', 'Hawk', 'Falcon',
+      'Leopard', 'Jaguar', 'Cheetah', 'Cougar', 'Lynx', 'Bobcat', 'Ocelot', 'Puma', 'Hyena', 'Jackal',
+      'Coyote', 'Dingo', 'Otter', 'Beaver', 'Raccoon', 'Skunk', 'Badger', 'Weasel', 'Mink', 'Ferret',
+      'Squirrel', 'Chipmunk', 'Hedgehog', 'Porcupine', 'Armadillo', 'Sloth', 'Anteater', 'Aardvark', 'Platypus', 'Kangaroo',
+      'Wallaby', 'Koala', 'Possum', 'Wombat', 'Tasmanian', 'Devil', 'Mongoose', 'Meerkat', 'Lemur', 'Monkey',
+      'Gorilla', 'Chimpanzee', 'Orangutan', 'Baboon', 'Gibbon', 'Macaque', 'Mandrill', 'Tamarin', 'Capuchin', 'Saki',
+      'Howler', 'Spider', 'Squirrel', 'Marmoset', 'Tarsier', 'Aye-aye', 'Loris', 'Galago', 'Bushbaby', 'Pangolin',
+      'Elephant', 'Rhinoceros', 'Hippopotamus', 'Giraffe', 'Zebra', 'Horse', 'Donkey', 'Mule', 'Camel', 'Llama',
+      'Alpaca', 'Vicuna', 'Guanaco', 'Buffalo', 'Bison', 'Yak', 'Cow', 'Bull', 'Ox', 'Goat'
+    ];
+
+    const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    const randomNumber = Math.floor(Math.random() * 1000);
+    return `${randomAdjective}${randomNoun}${randomNumber}`;
+  }
 
   public async findAll(): Promise<User[]> {
     const queryOptions: FindManyOptions<User> = {
@@ -112,6 +145,16 @@ export class UserService {
     return results;
   }
 
+  public async checkUsernameAvailability(username: string): Promise<boolean> {
+    const count: number = await this.repo.count({
+      where: {
+        username
+      },
+    });
+
+    return (count === 0);
+  }
+
   // create a new user
   public async create(newUserDto: CreateUserDto): Promise<User> {
     const roles = await this.roleRepo
@@ -120,7 +163,7 @@ export class UserService {
     .getMany();
 
     const newUser: Partial<User> = {
-      username: newUserDto.username,
+      username: newUserDto.username || this.generateRandomUsername(),
       email: newUserDto.email,
       password: this.hashService.hashSync(newUserDto.password),
       roles: roles,
