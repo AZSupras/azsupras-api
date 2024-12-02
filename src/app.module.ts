@@ -24,15 +24,16 @@ import { HashService } from './hash/hash.service';
 import { InviteModule } from './invite/invite.module';
 import { SeederModule } from './seeder/seeder.module';
 import { HashModule } from './hash/hash.module';
-import { UserRoleModule } from './user-role/user-role.module';
 import { SeederService } from './seeder/seeder.service';
 import { User } from './user/entities/user.entity';
-import { UserRole } from './user-role/user-role.entity';
+import { UserRole } from './user/entities/user-role.entity';
 import { AppConfigModule } from './app-config/app-config.module';
 import { LoggerModule } from './logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { TerminusModule } from '@nestjs/terminus';
-import { HealthController } from './health.controller';
+import { HealthController } from './health/health.controller';
+import { HealthModule } from './health/health.module';
+import { AppController } from './app.controller';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -91,9 +92,9 @@ const schedulerConfig: BullModuleOptions = {
     InviteModule,
     SeederModule,
     HashModule,
-    UserRoleModule,
     AppConfigModule,
     AuthModule,
+    HealthModule,
   ],
   providers: [
     AppService,
@@ -104,7 +105,7 @@ const schedulerConfig: BullModuleOptions = {
     SubscriberService,
     HashService,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, AppController],
 })
 export class AppModule implements OnModuleInit {
   private readonly logger = new LoggerService(AppModule.name);

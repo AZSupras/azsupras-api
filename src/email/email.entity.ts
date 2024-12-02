@@ -14,8 +14,8 @@ export class Email {
   @Column()
   template: string;
 
-  @Column()
-  subject: string;
+  @Column({ nullable: true })
+  subject?: string|null;
 
   @Column({ type: 'json' })
   context: string;

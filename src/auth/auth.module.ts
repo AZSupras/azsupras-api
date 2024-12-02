@@ -11,6 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { jwtConstants } from './auth.constants';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -25,6 +26,9 @@ import { jwtConstants } from './auth.constants';
       verifyOptions: {
         algorithms: ['HS384'],
       },
+    }),
+    BullModule.registerQueue({
+      name: 'email',
     }),
   ],
   controllers: [AuthController],

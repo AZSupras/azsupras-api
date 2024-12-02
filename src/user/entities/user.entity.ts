@@ -1,6 +1,6 @@
 import { Invite } from 'src/invite/invite.entity';
 import { Subscriber } from 'src/subscriber/subscriber.entity';
-import { UserRole } from 'src/user-role/user-role.entity';
+import { UserRole } from './user-role.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -11,7 +11,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
+import { hash, compare, genSalt, } from 'bcryptjs';
 
 @Entity()
 export class User {
@@ -33,8 +33,20 @@ export class User {
   @Column({ unique: true, nullable: true, select: false })
   email?: string|null;
 
+  @Column({ default: false })
+  isBanned: boolean;
+
+  @Column({ nullable: true, select: false })
+  bannedAt: Date;
+
+  @Column({ nullable: true, select: false })
+  bannedReason: string;
+
   @Column({ default: true })
   isPublic: boolean;
+
+  @Column({ default: false })
+  isVerified: boolean;
 
   // emailVerified
   // This field is used to determine if the user has verified their email address.
@@ -92,16 +104,25 @@ export class User {
   }
 
   @BeforeInsert()
-  @BeforeUpdate()
   async hashPassowrd(): Promise<void> {
-    const salt = await bcrypt.genSalt(10);
+    const salt = await genSalt(10);
 
     if (!/^\$2[abxy]?\$\d+\$/.test(this.password)) {
-      this.password = await bcrypt.hash(this.password, salt);
+      this.password = await hash(this.password, salt);
+    }
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async checkIfVerified(): Promise<void> {
+    if (this.emailVerified && this.firstName && this.lastName) {
+      this.isVerified = true;
     }
   }
 
   async checkPassword(plainPassword: string): Promise<boolean> {
-    return await bcrypt.compare(plainPassword, this.password);
+    const results = await compare(plainPassword, this.password);
+
+    return results;
   }
 }

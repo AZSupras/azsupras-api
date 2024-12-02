@@ -1,5 +1,5 @@
 import { CreateAppConfigDto } from "src/app-config/dto/create-app-config.dto";
-import { CreateUserRoleDto } from "src/user-role/dto/create-user-role.dto";
+import { CreateUserRoleDto } from "src/user/dto/create-user-role.dto";
 import { CreateUserDto } from "src/user/dto/create-user.dto";
 
 export type SeedUserDto = CreateUserDto & {

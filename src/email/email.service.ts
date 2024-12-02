@@ -5,6 +5,8 @@ import { CreateEmailDto } from './create-email.dto';
 import { Repository } from 'typeorm';
 import { Email } from './email.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserService } from 'src/user/services/user.service';
+import { User } from 'src/user/entities/user.entity';
 
 export interface EmailVerification {
   userId: string;
@@ -28,6 +30,7 @@ export class EmailService {
     private repo: Repository<Email>,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
   ) {}
 
   private async _send(mail: ISendMailOptions): Promise<ISentMessageInfo> {
@@ -50,21 +53,6 @@ export class EmailService {
     }
   }
 
-  // private async _generateEmailVerifyToken(userId: string) {
-  //   let user: User = await this.userService.findOneById(userId);
-
-  //   this.log.debug(`Generating email verification token for ${user.username}`);
-
-  //   user.emailVerifyToken = crypto
-  //     .createHash('sha1')
-  //     .update(user.id + user.email)
-  //     .digest('hex');
-
-  //   user = await this.userService.update(user.id, user);
-
-  //   return user;
-  // }
-
   // send verification email
   public async sendConfirmEmail(
     mail: CreateEmailDto,
@@ -72,15 +60,21 @@ export class EmailService {
     this.log.debug(`Sending confirmation email to ${mail.to}`);
 
     const baseUrl = this.configService.get<string>('API_BASE_URL');
+    const user: User = await this.userService.findEmailVerificationTokenUsername(mail.context.username);
 
-    const confirmLink = `${baseUrl}/api/v1/auth/confirm-email?token=${mail.context.token}`;
+    const confirmLink = `${baseUrl}/auth/confirm-email?token=${user.emailVerificationToken}`;
+
+    if (!confirmLink) {
+      throw new Error(`Failed to generate email confirmation link for user ${user.username}`);
+    }
 
     const opts: ISendMailOptions = {
       to: mail.to,
-      subject: 'Email Confirmation',
+      subject: mail.subject || 'Please Confirm your email address!',
       template: 'confirm_email',
       context: {
-        username: mail.context.username,
+        username: user.username,
+        firstName: user.firstName,
         confirmLink: confirmLink,
       },
     };
@@ -98,12 +92,12 @@ export class EmailService {
 
     const opts: ISendMailOptions = {
       to: mail.to,
-      subject: 'Welcome to our platform',
+      subject: mail.subject || 'Welcome to our club!',
       template: 'welcome',
       context: {
         email: mail.to,
+        username: mail.context.username,
         firstName: mail.context.firstName,
-        lastName: mail.context.lastName,
       },
     };
 

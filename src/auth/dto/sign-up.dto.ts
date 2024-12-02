@@ -4,14 +4,19 @@ import {
     IsEmail,
     MinLength,
     Validate,
+    IsOptional,
+    Min,
+    Max,
   } from 'class-validator';
 import { IsUserAlreadyExist } from 'src/user/validators/is-user-already-exist.validator';
   
-export class SignUp {
+export class SignUpDto {
     @IsDefined()
     @IsNotEmpty()
     readonly username: string;
   
+    @IsOptional()
+    @IsEmail()
     readonly email?: string|null|undefined;
   
     @IsDefined()
@@ -19,6 +24,9 @@ export class SignUp {
     @MinLength(8)
     readonly password: string;
 
-    firstName?: string|null;
-    lastName?: string|null;
+    @IsOptional()
+    readonly firstName?: string|null;
+
+    @IsOptional()
+    readonly lastName?: string|null;
   }

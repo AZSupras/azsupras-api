@@ -1,4 +1,4 @@
-import { UserRole } from "src/user-role/user-role.entity";
+import { UserRole } from "../entities/user-role.entity";
 import { User } from "../entities/user.entity";
 
 export class IUser {

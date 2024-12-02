@@ -1,6 +1,6 @@
 export class CreateEmailDto {
   to: string;
-  subject?: string;
+  subject?: string|null;
   template: string;
   context: any;
 }

@@ -14,7 +14,7 @@ import {
   import { AuthUser } from '../user/decorators/user.decorator';
   import { User } from '../user/entities/user.entity';
   import { AuthService } from './auth.service';
-  import { SignUp } from './dto/sign-up.dto';
+  import { SignUpDto } from './dto/sign-up.dto';
   import { JWTAuthGuard } from './guards/jwt-auth.guard';
   import { LocalAuthGuard } from './guards/local-auth.guard';
   import { TokenInterceptor } from './interceptors/token.interceptor';
@@ -32,7 +32,7 @@ import { GuestGuard } from './guards/guest.guard';
     @Post('register')
     @UseGuards(GuestGuard)
     @HttpCode(HttpStatus.CREATED)
-    async register(@Body() signUp: SignUp): Promise<IResponseWithRelation<User>> {
+    async register(@Body() signUp: SignUpDto): Promise<IResponseWithRelation<User>> {
       const data: User = await this.authService.register(signUp);
 
       const response: IResponseWithRelation<User> = {

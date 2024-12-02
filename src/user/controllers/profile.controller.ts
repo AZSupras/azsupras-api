@@ -20,6 +20,9 @@ import { Public } from 'src/auth/guards/public.guard';
 import { IResponseWithRelation } from 'src/interfaces/IResponse';
 import { PublicUserDto } from '../dto/public-user.dto';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { IsAdminGuard } from 'src/auth/guards/is-admin.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { AuthUser } from '../decorators/user.decorator';
 
 @Controller('u')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -47,10 +50,10 @@ export class ProfileController {
     return results;
   }
   
-  @UseGuards(LocalAuthGuard)
   @Get()
-  async getMe(@Req() req: Request): Promise<IResponseWithRelation<User>> {
-    const data: User = await this.userService.findOneByUsername('admin');
+  @UseGuards(AuthGuard)
+  async getMe(@AuthUser() user: User, @Req() req: Request): Promise<IResponseWithRelation<User>> {
+    const data: User = user;3
 
     const results: IResponseWithRelation<User> = {
       statusCode: 200,
@@ -61,7 +64,7 @@ export class ProfileController {
     return results;
   }
 
-  @UseGuards(LocalAuthGuard)
+  @UseGuards(AuthGuard, IsAdminGuard)
   @Put(':username')
   async updateMe(
     @Param('username') username: string,

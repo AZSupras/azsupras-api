@@ -58,7 +58,7 @@
                                                 </tbody>
                                               </table>
                                             </a>
-                                            <h5 class="text-black-700" style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 20px; line-height: 24px; margin: 0;" align="left">Hello, {{username}}</h5>
+                                            <h5 class="text-black-700" style="padding-top: 0; padding-bottom: 0; font-weight: 500; vertical-align: baseline; font-size: 20px; line-height: 24px; margin: 0;" align="left">Hello, {{#if firstName}}{{firstName}}{{else}}{{username}}{{/if}}</h5>
                                             <table class="s-5 w-full" role="presentation" border="0" cellpadding="0" cellspacing="0" style="width: 100%;" width="100%">
                                               <tbody>
                                                 <tr>
@@ -100,7 +100,7 @@
                                                 <tbody>
                                                   <tr>
                                                     <td style="line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;" align="center" bgcolor="#0d6efd">
-                                                      <a href="{{verifyLink}}" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Confirm My Email</a>
+                                                      <a href="{{confirmLink}}" style="color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;">Confirm My Email</a>
                                                     </td>
                                                   </tr>
                                                 </tbody>

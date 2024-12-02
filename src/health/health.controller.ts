@@ -21,6 +21,7 @@ export class HealthController {
     return this.health.check([
       () => this.orm.pingCheck('db'),
       () => this.memory.checkRSS('mem_rss', 1024 * 2 ** 20 /* 1024 MB */),
+      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
     ]);
   }
 }

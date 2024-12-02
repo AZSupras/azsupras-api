@@ -1,13 +1,15 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
+import crypto, { randomBytes } from 'crypto';
 import { HashService } from 'src/hash/hash.service';
-import { PublicUserDto } from '../dto/public-user.dto';
-import { CreateUserDto } from '../dto/create-user.dto';
 import { LoggerService } from 'src/logger/logger.service';
-import { UserRole } from 'src/user-role/user-role.entity';
-import { UserRoleService } from 'src/user-role/user-role.service';
+import { UserRoleService } from 'src/user/services/user-role.service';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { PublicUserDto } from '../dto/public-user.dto';
+import { UserRole } from '../entities/user-role.entity';
+import { User } from '../entities/user.entity';
+import { BanUserDto } from '../dto/ban-user.dto';
 
 const adjectives = [
   "Adventurous", "Brave", "Calm", "Delightful", "Eager", "Faithful", "Gentle",
@@ -73,6 +75,23 @@ export class UserService {
     private hashService: HashService,
   ) { }
 
+  private _generateRandomAlphanumeric(length: number): string {
+    return randomBytes(length / 2).toString('hex');
+  }
+
+  private async _isCodeUnique(emailVerificationToken: string): Promise<boolean> {
+    const count = await this.repo.count({ where: { emailVerificationToken  } });
+    return count === 0;
+  }
+
+  private async _generateUniqueCode(length: number = 16): Promise<string> {
+    let code: string;
+    do {
+      code = this._generateRandomAlphanumeric(length);
+    } while (!(await this._isCodeUnique(code)));
+    return code;
+  }
+  
   public generateRandomUsername(): string {
     const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
@@ -161,10 +180,27 @@ export class UserService {
       where: {
         username,
       },
-      select: {
-        username: true,
-      },
       ...options,
+    };
+
+    const results = await this.repo.findOne(query);
+
+    return results;
+  }
+
+  public async findEmailVerificationTokenUsername(username: string): Promise<User> {
+    const query: FindOneOptions<User> = {
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+        username: true,
+        emailVerificationToken: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      }
     };
 
     const results = await this.repo.findOne(query);
@@ -198,6 +234,7 @@ export class UserService {
         id: true,
         username: true,
         password: true,
+        isBanned: true,
         roles: {
           slug: true,
         },
@@ -231,18 +268,35 @@ export class UserService {
     const newUser: Partial<User> = {
       username: newUserDto.username || this.generateRandomUsername(),
       email: newUserDto.email,
+      firstName: newUserDto.firstName,
+      lastName: newUserDto.lastName,
       password: this.hashService.hashSync(newUserDto.password),
       roles: roles,
     };
 
+    if (newUserDto.email) {
+      newUser.emailVerificationToken = await this._generateUniqueCode(16);
+    }
+
     let user: User = this.repo.create(newUser);
     user = await this.repo.save(user);
 
-    user = await this.findOneById(user.id);
+    user = await this.findOneById(user.id, {
+      select: {
+        username: true,
+        email: true,
+        emailVerificationToken: true,
+        firstName: true,
+        lastName: true,
+        roles: {
+          slug: true,
+        },
+      }
+    });
 
     return user;
   }
-  
+
   public async update(username: string, updateUserDto: Partial<User>, options?: FindOneOptions<User>): Promise<User> {
     const user: User = await this.findOneById(username);
 
@@ -258,6 +312,46 @@ export class UserService {
     updatedUser = await this.findOneById(updatedUser.id, options);
 
     return updatedUser;
+  }
+
+  public async banUser({ username, reason }: BanUserDto): Promise<User> {
+    if (!username) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    if (!reason) {
+      reason = 'No reason provided.';
+    }
+
+    const user: User = await this.findOneByUsername(username);
+
+    if (!user) {
+      throw new NotFoundException(`User '${username}' not found.`);
+    }
+
+    user.isBanned = true;
+    user.bannedAt = new Date();
+    user.bannedReason = reason;
+
+    const bannedUser: User = await this.repo.save(user);
+
+    return bannedUser;
+  }
+
+  public async unbanUser(username: string): Promise<User> {
+    const user: User = await this.findOneByUsername(username);
+
+    if (!user) {
+      throw new NotFoundException(`User '${username}' not found.`);
+    }
+
+    user.isBanned = false;
+    user.bannedAt = null;
+    user.bannedReason = null;
+
+    const unbannedUser: User = await this.repo.save(user);
+
+    return unbannedUser;
   }
 
   public async clearAll(): Promise<void> {

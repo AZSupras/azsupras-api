@@ -10,12 +10,14 @@ import { EmailProcessor } from './email.processor';
 import { SubscriberService } from 'src/subscriber/subscriber.service';
 import { Subscriber } from 'src/subscriber/subscriber.entity';
 import { HashService } from 'src/hash/hash.service';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Email, Subscriber]),
     ConfigModule,
     MailerModule,
+    UserModule,
     BullModule.registerQueue({
       name: 'email',
     }),
