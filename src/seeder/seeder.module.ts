@@ -13,7 +13,7 @@ import { LoggerModule } from 'src/logger/logger.module';
     HashModule,
     LoggerModule,
     AppConfigModule,
-    TypeOrmModule.forFeature([User, UserRole]),
+    TypeOrmModule.forFeature([User, UserRole,]),
   ],
   providers: [HashService, SeederService],
   exports: [SeederService],

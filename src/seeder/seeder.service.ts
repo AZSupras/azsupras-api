@@ -176,7 +176,7 @@ export class SeederService {
         emailVerified: user.emailVerified,
         emailVerifiedAt: user.emailVerifiedAt,
         isPublic: user.isPublic,
-        roles: roles
+        roles: roles,
       });
 
       dbUser = await this.userRepo.save(dbUser);

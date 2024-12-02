@@ -7,12 +7,15 @@ import {
   Body,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AppConfigService } from './app-config.service';
 import { AppConfig } from './app-config.entity';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 import { DeleteResult } from 'typeorm';
 import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { IsAuthenticatedGuard } from 'src/auth/guards/is-authenticated.guard';
+import { IsAdminGuard } from 'src/auth/guards/is-admin.guard';
 
 @Controller('config')
 export class AppConfigController {
@@ -37,6 +40,7 @@ export class AppConfigController {
     return response;
   }
 
+  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   @Get('all')
   async getAllConfigs() {
     const data: AppConfig[] = await this.appConfigService.findAll();
@@ -56,10 +60,15 @@ export class AppConfigController {
     return response;
   }
 
+  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   @Post()
   async upsert(
     @Body() createAppConfigDto: CreateAppConfigDto,
   ): Promise<IResponseWithRelation<AppConfig>> {
+    if (!createAppConfigDto) {
+      throw new InternalServerErrorException('No data provided');
+    }
+    
     const data: AppConfig =
       await this.appConfigService.upsert(createAppConfigDto);
 
@@ -72,6 +81,7 @@ export class AppConfigController {
     return response;
   }
 
+  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<IResponseWithRelation<DeleteResult>> {
     const data: DeleteResult = await this.appConfigService.delete(id);

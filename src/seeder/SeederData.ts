@@ -35,7 +35,7 @@ export const SeedData_Users: SeedUserDto[] = [
         firstName: 'Gordon',
         lastName: 'Freeman',
         isPublic: false,
-        roleSlugs: ['admin', 'user'],
+        roleSlugs: ['admin'],
     },
 ];
 

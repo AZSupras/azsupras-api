@@ -6,12 +6,15 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { hash, compare, genSalt, } from 'bcryptjs';
+import { Ban } from 'src/admin/ban/ban/ban.entity';
 
 @Entity()
 export class User {
@@ -48,6 +51,9 @@ export class User {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ default: false })
+  isOnline: boolean;
+
   // emailVerified
   // This field is used to determine if the user has verified their email address.
   @Column({ default: false, select: false })
@@ -70,6 +76,9 @@ export class User {
   // passwordResetRequestedAt
   @Column({ type: 'timestamp', nullable: true, select: false })
   passwordResetRequestedAt: Date;
+
+  @Column({ nullable: true })
+  lastLogin: Date;
 
   // createdAt
   @Column({
@@ -98,6 +107,10 @@ export class User {
   @ManyToMany(() => UserRole, (role) => role.users)
   @JoinTable()
   roles: UserRole[];
+
+  // user may have more than one ban
+  @OneToMany(() => Ban, (ban) => ban.user)
+  bans: Ban[];
 
   constructor(data: Partial<User> = {}) {
     Object.assign(this, data);

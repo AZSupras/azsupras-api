@@ -4,7 +4,7 @@ import { count } from 'console';
 import { Invite } from './invite.entity';
 import { IResponseWithRelation } from 'src/interfaces/IResponse';
 import { IsAdminGuard } from 'src/auth/guards/is-admin.guard';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { IsAuthenticatedGuard } from 'src/auth/guards/is-authenticated.guard';
 
 @Controller('invite')
 export class InviteController {
@@ -12,7 +12,7 @@ export class InviteController {
         private readonly inviteService: InviteService,
     ) { }
     
-    @UseGuards(AuthGuard, IsAdminGuard)
+    @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     @Get('generate')
     async generate(@Query('count') count: number = 1) {
         const data = await this.inviteService.createMany(count);
@@ -27,7 +27,7 @@ export class InviteController {
         return response;
     }
 
-    @UseGuards(AuthGuard, IsAdminGuard)
+    @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     @Get('clearall')
     async clearAll() {
         await this.inviteService.clearAll();
@@ -38,7 +38,7 @@ export class InviteController {
         };
     }
 
-    @UseGuards(AuthGuard, IsAdminGuard)
+    @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     @Get()
     async findAll() {
         const data = await this.inviteService.findAll();
@@ -53,8 +53,7 @@ export class InviteController {
         return response;
     }
 
-    
-    @UseGuards(AuthGuard, IsAdminGuard)
+    @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     @Get(':code')
     async findOneByCode(@Param('code') code: string) {
         const data = await this.inviteService.findOneByCode(code);

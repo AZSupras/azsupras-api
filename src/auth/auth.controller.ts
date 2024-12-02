@@ -5,7 +5,9 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Post,
+    Query,
     Req,
     UseGuards,
     UseInterceptors,
@@ -21,8 +23,8 @@ import {
   import { Public } from './guards/public.guard';
   import { IResponse, IResponseWithRelation } from 'src/interfaces/IResponse';
   import { Request } from 'express';
-import { AuthGuard } from './guards/auth.guard';
-import { GuestGuard } from './guards/guest.guard';
+import { IsAuthenticatedGuard } from './guards/is-authenticated.guard';
+import { IsGuestGuard } from './guards/is-guest.guard';
 
   @Controller('auth')
   @UseInterceptors(ClassSerializerInterceptor)
@@ -30,7 +32,7 @@ import { GuestGuard } from './guards/guest.guard';
     constructor(private readonly authService: AuthService) {}
   
     @Post('register')
-    @UseGuards(GuestGuard)
+    @UseGuards(IsGuestGuard)
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() signUp: SignUpDto): Promise<IResponseWithRelation<User>> {
       const data: User = await this.authService.register(signUp);
@@ -45,7 +47,7 @@ import { GuestGuard } from './guards/guest.guard';
     }
   
     @Post('login')
-    @UseGuards(LocalAuthGuard)
+    @UseGuards(IsGuestGuard, LocalAuthGuard)
     @HttpCode(HttpStatus.OK)
     async login(@AuthUser() user: User): Promise<IResponseWithRelation<User>> {
       const response: IResponseWithRelation<User> = {
@@ -58,7 +60,7 @@ import { GuestGuard } from './guards/guest.guard';
     }
 
     @Get('logout')
-    @UseGuards(AuthGuard)
+    @UseGuards(IsAuthenticatedGuard)
     async logout(@Req() request: Request): Promise<IResponse> {
       await this.authService.logout(request);
       
@@ -71,12 +73,72 @@ import { GuestGuard } from './guards/guest.guard';
     }
   
     @Get('/me')
-    @UseGuards(AuthGuard)
+    @UseGuards(IsAuthenticatedGuard)
     me(@AuthUser() user: User): IResponseWithRelation<User> {
 
       const response: IResponseWithRelation<User> = {
         statusCode: 200,
         message: 'Your profile.',
+        data: user,
+      };
+
+      return response;
+    }
+    //http://localhost:3001/api/v1/auth/confirm-email?token=f8037db33301a9cc
+    @Get('confirm-email')
+    async confirmEmail(@Req() request: Request, @Query('token') token: string): Promise<IResponseWithRelation<User>> {
+      if (!token) {
+        const response: IResponse = {
+          statusCode: 400,
+          message: 'Token is required',
+        };
+
+        return response;
+      }
+
+      let user: User | null = await this.authService.findUserByEmailVerificationToken(token);
+
+      if (!user) {
+        const response: IResponse = {
+          statusCode: 400,
+          message: 'No user found for provided token, could token be expired or already claimed?',
+        };
+
+        return response;
+      }
+
+      if (user.emailVerified) {
+        const response: IResponse = {
+          statusCode: 400,
+          message: 'Email already confirmed',
+        };
+
+        return response;
+      }
+
+      if (user.emailVerificationToken !== token) {
+        const response: IResponse = {
+          statusCode: 400,
+          message: 'Invalid token',
+        };
+
+        return response;
+      }
+
+      user = await this.authService.confirmEmail(token);
+
+      if (!user) {
+        const response: IResponse = {
+          statusCode: 400,
+          message: 'Invalid token',
+        };
+
+        return response
+      }
+
+      const response: IResponseWithRelation<User> = {
+        statusCode: 200,
+        message: 'Email confirmed, You can close this window.',
         data: user,
       };
 

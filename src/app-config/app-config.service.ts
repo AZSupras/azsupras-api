@@ -43,37 +43,21 @@ export class AppConfigService {
     return result;
   }
 
-  // create a new app config
-  private async _create(newAppConfig: CreateAppConfigDto): Promise<AppConfig> {
-    let appConfig: AppConfig = new AppConfig();
-
-    appConfig.appName = newAppConfig.appName;
-    appConfig.registrationEnabled = newAppConfig.registrationEnabled;
-    appConfig.emailVerificationRequired =
-      newAppConfig.emailVerificationRequired;
-
-    appConfig = this.repo.create(appConfig);
-
-    await this.repo.save(appConfig);
-
-    return appConfig;
-  }
-
-  public async upsert(newAppConfig: CreateAppConfigDto): Promise<AppConfig> {
-    const existingConfig = await this.getLatest();
+  public async upsert(newAppConfig: Partial<AppConfig>): Promise<AppConfig> {
+    let existingConfig: AppConfig = await this.getLatest();
 
     if (existingConfig) {
-      existingConfig.appName = newAppConfig.appName;
-      existingConfig.registrationEnabled = newAppConfig.registrationEnabled;
-      existingConfig.emailVerificationRequired =
-        newAppConfig.emailVerificationRequired;
-
+      existingConfig = { ...existingConfig, ...newAppConfig };
       await this.repo.update(existingConfig.id, existingConfig);
 
       return existingConfig;
     } else {
-      return this._create(newAppConfig);
+      existingConfig = this.repo.create(newAppConfig);
+
+      existingConfig = await this.repo.save(existingConfig);
+      return existingConfig;
     }
+
   }
 
   public async delete(id: string): Promise<DeleteResult> {

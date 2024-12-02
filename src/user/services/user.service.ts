@@ -9,7 +9,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { PublicUserDto } from '../dto/public-user.dto';
 import { UserRole } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
-import { BanUserDto } from '../dto/ban-user.dto';
+import { BanUserDto } from '../../admin/dto/ban-user.dto';
 
 const adjectives = [
   "Adventurous", "Brave", "Calm", "Delightful", "Eager", "Faithful", "Gentle",
@@ -208,6 +208,40 @@ export class UserService {
     return results;
   }
 
+  public async findUserByEmailVerificationToken(emailVerificationToken: string): Promise<User> {
+    const query: FindOneOptions<User> = {
+      where: {
+        emailVerificationToken,
+      },
+      select: {
+        id: true,
+        username: true,
+        emailVerificationToken: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      }
+    };
+
+    const results = await this.repo.findOne(query);
+
+    return results;
+  }
+
+  public async confirmEmail(token: string): Promise<User> {
+    let user: User = await this.findUserByEmailVerificationToken(token);
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    user.emailVerificationToken = null;
+    user.emailVerified = true;
+    user.emailVerifiedAt = new Date();
+    user = await this.update(user.id, user);
+
+    return user;
+  }
+
   public async findOneByIdentity(identity: string, options?: FindOneOptions<User>): Promise<User> {
     // regexp check if identity is an email address or username
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identity);
@@ -298,7 +332,7 @@ export class UserService {
   }
 
   public async update(username: string, updateUserDto: Partial<User>, options?: FindOneOptions<User>): Promise<User> {
-    const user: User = await this.findOneById(username);
+    const user: User = await this.findOneByUsername(username);
 
     if (!user) {
       throw new NotFoundException(`User with username '${username}' not found.`);
@@ -314,44 +348,104 @@ export class UserService {
     return updatedUser;
   }
 
-  public async banUser({ username, reason }: BanUserDto): Promise<User> {
-    if (!username) {
-      throw new NotFoundException(`User not found.`);
-    }
-
-    if (!reason) {
-      reason = 'No reason provided.';
-    }
-
-    const user: User = await this.findOneByUsername(username);
+  public async updateLastLogin(id: string): Promise<User> {
+    let user: User = await this.findOneById(id, {
+      relations: ['roles'],
+    });
 
     if (!user) {
-      throw new NotFoundException(`User '${username}' not found.`);
+      throw new NotFoundException(`User with id '${id}' not found.`);
     }
 
-    user.isBanned = true;
-    user.bannedAt = new Date();
-    user.bannedReason = reason;
+    user.lastLogin = new Date();
 
-    const bannedUser: User = await this.repo.save(user);
-
-    return bannedUser;
+    user = await this.repo.save(user);
+    
+    return user;
   }
 
-  public async unbanUser(username: string): Promise<User> {
-    const user: User = await this.findOneByUsername(username);
+  public async toggleOnlineStatus(id: string, override?: boolean): Promise<User> {
+    let user: User = await this.findOneById(id, {
+      relations: ['roles'],
+    });
 
     if (!user) {
-      throw new NotFoundException(`User '${username}' not found.`);
+      throw new NotFoundException(`User with id '${id}' not found.`);
     }
 
-    user.isBanned = false;
-    user.bannedAt = null;
-    user.bannedReason = null;
+    user.isOnline = override || !user.isOnline;
 
-    const unbannedUser: User = await this.repo.save(user);
+    user = await this.repo.save(user);
 
-    return unbannedUser;
+    return user;
+  }
+
+  public async getOnlineAdminCount(): Promise<number> {
+    const query: FindManyOptions<User> = {
+      where: {
+        isOnline: true,
+        roles: [
+          {
+            slug: 'admin'
+          }
+        ]
+      },
+    }
+
+    const results: number = await this.repo.count(query);
+
+    return results;
+  }
+
+  public async getOfflineAdminCount(): Promise<number> {
+    const query: FindManyOptions<User> = {
+      where: {
+        isOnline: false,
+        roles: [
+          {
+            slug: 'admin'
+          }
+        ]
+      },
+    }
+    
+    const results: number = await this.repo.count(query);
+
+    return results;
+  }
+
+  public async getOnlineUserCount(): Promise<number> {
+    const query: FindManyOptions<User> = {
+      where: {
+        isOnline: true,
+        roles: [
+          {
+            slug: 'user'
+          }
+        ]
+      },
+    }
+    
+    const results: number = await this.repo.count(query);
+
+    return results;
+  }
+
+  public async getOfflineUserCount(): Promise<number> {
+    const query: FindManyOptions<User> = {
+      where: {
+        isOnline: false,
+        roles: [
+          {
+            slug: 'user'
+          }
+        ]
+      },
+    }
+    
+    const results: number = await this.repo.count(query);
+
+    return results;
   }
 
   public async clearAll(): Promise<void> {

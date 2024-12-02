@@ -34,6 +34,9 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health/health.controller';
 import { HealthModule } from './health/health.module';
 import { AppController } from './app.controller';
+import { AdminController } from './admin/admin.controller';
+import { AdminModule } from './admin/admin.module';
+import { HelpModule } from './help/help.module';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -61,7 +64,7 @@ const schedulerConfig: BullModuleOptions = {
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      entities: [Email, Subscriber, User, UserRole],
+      entities: [Email, Subscriber, User, UserRole,],
       synchronize: true,
     }),
     MailerModule.forRoot({
@@ -95,6 +98,8 @@ const schedulerConfig: BullModuleOptions = {
     AppConfigModule,
     AuthModule,
     HealthModule,
+    AdminModule,
+    HelpModule,
   ],
   providers: [
     AppService,
@@ -105,7 +110,7 @@ const schedulerConfig: BullModuleOptions = {
     SubscriberService,
     HashService,
   ],
-  controllers: [HealthController, AppController],
+  controllers: [HealthController, AppController, AdminController],
 })
 export class AppModule implements OnModuleInit {
   private readonly logger = new LoggerService(AppModule.name);

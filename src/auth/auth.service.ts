@@ -93,6 +93,9 @@ export class AuthService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
+      await this.userService.updateLastLogin(user.id)
+      user = await this.userService.toggleOnlineStatus(user.id, true);
+
       delete user.password;
     } catch (err) {
       throw err;
@@ -103,7 +106,10 @@ export class AuthService {
   }
 
   async logout(@Req() request: Request): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      let user: Partial<User> = request.user;
+      user = await this.userService.toggleOnlineStatus(user.id, false);
+
       request.session.destroy(() => {
         resolve();
       });
@@ -122,6 +128,29 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  public async findUserByEmailVerificationToken(token: string): Promise<User> {
+    return await this.userService.findUserByEmailVerificationToken(token);
+  }
+
+  async findUserByUserId(userId: string): Promise<User|null> {
+    try {
+      let user: User = await this.userService.findOneById(userId);
+      return user;
+
+    } catch(err) {
+      throw new Error(err.message);
+    }
+  }
+
+  async confirmEmail(token: string) {
+    try {
+      let user: User = await this.userService.confirmEmail(token);
+      return user;
+    } catch(err) {
+      throw new Error(err.message);
+    }
   }
 
   signToken(user: User): string {
