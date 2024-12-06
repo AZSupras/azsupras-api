@@ -1,0 +1,33 @@
+import { Invite } from 'src/invite/invite.entity';
+import { Subscriber } from 'src/subscriber/subscriber.entity';
+import { UserRole } from './user-role.entity';
+import { Ban } from 'src/admin/ban/ban/ban.entity';
+export declare class User {
+    id: string;
+    username: string;
+    password: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string | null;
+    isBanned: boolean;
+    bannedAt: Date;
+    bannedReason: string;
+    isPublic: boolean;
+    isVerified: boolean;
+    isOnline: boolean;
+    emailVerified: boolean;
+    emailVerificationToken: string;
+    emailVerifiedAt: Date;
+    passwordResetToken: string;
+    passwordResetExpires: Date;
+    passwordResetRequestedAt: Date;
+    lastLogin: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    subscriber: Subscriber;
+    invite: Invite;
+    roles: UserRole[];
+    bans: Ban[];
+    constructor(data?: Partial<User>);
+    checkPassword(plainPassword: string): Promise<boolean>;
+}
