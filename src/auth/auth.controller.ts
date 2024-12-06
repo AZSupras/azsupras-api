@@ -5,6 +5,7 @@ import {
     Get,
     HttpCode,
     HttpStatus,
+    InternalServerErrorException,
     Param,
     Post,
     Query,
@@ -25,6 +26,7 @@ import {
   import { Request } from 'express';
 import { IsAuthenticatedGuard } from './guards/is-authenticated.guard';
 import { IsGuestGuard } from './guards/is-guest.guard';
+import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-payload.interface';
 
   @Controller('auth')
   @UseInterceptors(ClassSerializerInterceptor)
@@ -84,6 +86,7 @@ import { IsGuestGuard } from './guards/is-guest.guard';
 
       return response;
     }
+
     //http://localhost:3001/api/v1/auth/confirm-email?token=f8037db33301a9cc
     @Get('confirm-email')
     async confirmEmail(@Req() request: Request, @Query('token') token: string): Promise<IResponseWithRelation<User>> {
@@ -143,6 +146,43 @@ import { IsGuestGuard } from './guards/is-guest.guard';
       };
 
       return response;
+    }
+
+    @Post('forgot-password')
+    @UseGuards(IsGuestGuard)
+    @HttpCode(HttpStatus.CREATED)
+    async forgotPassword(@Body() {email}: IForgotPasswordValues): Promise<IResponse> {
+      return this.authService.forgotPassword(email)
+      .then(() => {
+        const r: IResponse = {
+          statusCode: 200,
+          message: 'Password reset link will be sent to your email.',
+        }
+        
+        return r;  
+      })
+      .catch((error) => {
+        throw new InternalServerErrorException(error);
+      })
+    }
+
+    @Post('reset-password')
+    @UseGuards(IsGuestGuard)
+    @HttpCode(HttpStatus.CREATED)
+    async resetPassword(@Body() payload: IResetPasswordValues): Promise<IResponseWithRelation<User>> {
+      return this.authService.resetPassword(payload)
+      .then((data: User) => {
+        const r: IResponseWithRelation<User> = {
+          statusCode: 200,
+          message: 'Password reset successful.',
+          data,
+        }
+        
+        return r;  
+      })
+      .catch((error) => {
+        throw new InternalServerErrorException(error);
+      })
     }
   }
   

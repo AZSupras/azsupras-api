@@ -46,6 +46,9 @@ export class EmailProcessor {
       case 'newsletter_subscription':
         response = await this.emailService.sendNewsletterSubscription(job.data);
         break;
+      case 'password_reset':
+        response = await this.emailService.sendPasswordReset(job.data);
+        break
       default:
         break;
     }

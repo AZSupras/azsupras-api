@@ -135,6 +135,35 @@ export class EmailService {
     return results;
   }
 
+  // send verification email
+  public async sendPasswordReset(
+    mail: CreateEmailDto,
+  ): Promise<ISentMessageInfo> {
+    this.log.debug(`Sending password reset email to ${mail.to}`);
+
+    const baseUrl = this.configService.get<string>('APP_BASE_URL');
+
+    const confirmLink = `${baseUrl}/reset-password?token=${mail.context.token}`;
+
+    if (!confirmLink) {
+      throw new Error(`Failed to generate password reset email link for user ${mail.context.username}`);
+    }
+
+    const opts: ISendMailOptions = {
+      to: mail.to,
+      subject: mail.subject || 'Reset your password!',
+      template: 'password_reset',
+      context: {
+        ...mail.context,
+        confirmLink: confirmLink,
+      },
+    };
+
+    const results: ISentMessageInfo = await this._send(opts);
+
+    return results;
+  }
+
   // get all unsent emails from the database, loop through them, and send them, then update the email record in the database that it was sent
   public async sendUnsentEmails(): Promise<void> {
     if (this.sendingEmails === true) {
@@ -171,6 +200,9 @@ export class EmailService {
             break;
           case 'newsletter_subscription':
             response = await this.sendNewsletterSubscription(email);
+            break;
+          case 'password_reset':
+            response = await this.sendPasswordReset(email);
             break;
           default:
             break;

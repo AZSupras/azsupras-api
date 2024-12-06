@@ -73,6 +73,11 @@ export class User {
   @Column({ nullable: true, select: false })
   passwordResetToken: string;
 
+  // emailVerifiedAt
+  // This field is used to store the date and time that the user verified their email address.
+  @Column({ type: 'timestamp', nullable: true, select: false })
+  passwordResetExpires: Date;
+
   // passwordResetRequestedAt
   @Column({ type: 'timestamp', nullable: true, select: false })
   passwordResetRequestedAt: Date;
@@ -114,23 +119,6 @@ export class User {
 
   constructor(data: Partial<User> = {}) {
     Object.assign(this, data);
-  }
-
-  @BeforeInsert()
-  async hashPassowrd(): Promise<void> {
-    const salt = await genSalt(10);
-
-    if (!/^\$2[abxy]?\$\d+\$/.test(this.password)) {
-      this.password = await hash(this.password, salt);
-    }
-  }
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  async checkIfVerified(): Promise<void> {
-    if (this.emailVerified && this.firstName && this.lastName) {
-      this.isVerified = true;
-    }
   }
 
   async checkPassword(plainPassword: string): Promise<boolean> {

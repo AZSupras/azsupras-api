@@ -10,6 +10,9 @@ import { PublicUserDto } from '../dto/public-user.dto';
 import { UserRole } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
 import { BanUserDto } from '../../admin/dto/ban-user.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { CreateEmailDto } from 'src/email/create-email.dto';
 
 const adjectives = [
   "Adventurous", "Brave", "Calm", "Delightful", "Eager", "Faithful", "Gentle",
@@ -99,6 +102,18 @@ export class UserService {
     return `${randomAdjective}${randomNoun}${randomNumber}`;
   }
 
+  public async find(query: FindManyOptions<User>): Promise<User[]> {
+    const results = await this.repo.find(query);
+
+    return results;
+  }
+
+  public async findOne(query: FindOneOptions<User>): Promise<User> {
+    const results = await this.repo.findOne(query);
+
+    return results;
+  }
+
   public async findAll(): Promise<User[]> {
     const query: FindManyOptions<User> = {
       relations: ['roles'],
@@ -186,6 +201,33 @@ export class UserService {
     const results = await this.repo.findOne(query);
 
     return results;
+  }
+
+  public async forgotPassword(email: string): Promise<User> {
+    let user: User = await this.findOneByEmail(email);
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    user.passwordResetToken = await this._generateUniqueCode(16);
+    user.passwordResetRequestedAt = new Date();
+    user.passwordResetExpires = new Date(Date.now() + 3600000); // 1 hour
+
+    user = await this.repo.save(user);
+    user = await this.findOneById(user.id, {
+      select: {
+        username: true,
+        email: true,
+        passwordResetToken: true,
+        firstName: true,
+        lastName: true,
+        roles: {
+          slug: true,
+        },
+      }
+    });
+
+    return user;
   }
 
   public async findEmailVerificationTokenUsername(username: string): Promise<User> {
@@ -291,6 +333,11 @@ export class UserService {
     return (count === 0);
   }
   
+  public async save(user: User): Promise<User> {
+    user = await this.repo.save(user);
+    return user;
+  }
+
   // create a new user
   public async create(newUserDto: CreateUserDto, options?: FindOneOptions<User>): Promise<User> {
     const roles: UserRole[] = await this.userRoleService.findManyBySlugs(newUserDto.roleSlugs);
@@ -313,7 +360,7 @@ export class UserService {
     }
 
     let user: User = this.repo.create(newUser);
-    user = await this.repo.save(user);
+    user = await this.save(user);
 
     user = await this.findOneById(user.id, {
       select: {
@@ -359,7 +406,7 @@ export class UserService {
 
     user.lastLogin = new Date();
 
-    user = await this.repo.save(user);
+    user = await this.save(user);
     
     return user;
   }
@@ -375,7 +422,7 @@ export class UserService {
 
     user.isOnline = override || !user.isOnline;
 
-    user = await this.repo.save(user);
+    user = await this.save(user);
 
     return user;
   }
@@ -446,6 +493,27 @@ export class UserService {
     const results: number = await this.repo.count(query);
 
     return results;
+  }
+
+  public async resetPassword(token: string, password: string): Promise<User> {
+    let user: User | null = await this.findOne({
+      where: {
+        passwordResetToken: token,
+      }
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    user.password = this.hashService.hashSync(password);
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    user.passwordResetRequestedAt = null;
+
+    user = await this.repo.save(user);
+
+    return user;
   }
 
   public async clearAll(): Promise<void> {

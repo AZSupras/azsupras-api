@@ -6,14 +6,18 @@ import { AdminUserService } from './user.admin.service';
 import { User } from 'src/user/entities/user.entity';
 import { BanUserDto, UnbanUserDto } from 'src/admin/dto/ban-user.dto';
 
-@Controller('admin/user')
+@Controller(['admin/user', 'admin/users'])
 export class AdminUserController {
     constructor(private readonly userService: AdminUserService) {}
 
     @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     @Get()
     async Admin_getAll(): Promise<IResponseWithRelation<User[]>> {
-        const data: User[] = await this.userService.findAll();
+        const data: User[] = await this.userService.find({
+          relations: {
+            roles: true,
+          }
+        });
 
         const results: IResponseWithRelation<User[]> = {
             statusCode: 200,

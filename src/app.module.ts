@@ -37,6 +37,7 @@ import { AppController } from './app.controller';
 import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
 import { HelpModule } from './help/help.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -87,6 +88,7 @@ const schedulerConfig: BullModuleOptions = {
         },
       },
     }),
+    ScheduleModule.forRoot(),
     BullModule.forRoot(schedulerConfig),
     UserModule,
     EmailModule,

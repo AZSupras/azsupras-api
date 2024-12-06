@@ -5,7 +5,7 @@ import { BanUserDto } from "src/admin/dto/ban-user.dto";
 import { UserRole } from "src/user/entities/user-role.entity";
 import { User } from "src/user/entities/user.entity";
 import { UserService } from "src/user/services/user.service";
-import { Repository } from "typeorm";
+import { FindManyOptions, FindOneOptions, Repository } from "typeorm";
 
 @Injectable()
 export class AdminUserService {
@@ -18,6 +18,19 @@ export class AdminUserService {
         private readonly roleRepo: Repository<UserRole>,
     ) { }
 
+
+
+    public async find(query: FindManyOptions<User>): Promise<User[]> {
+        const results = await this.userRepo.find(query);
+    
+        return results;
+    }
+    
+    public async findOne(query: FindOneOptions<User>): Promise<User> {
+        const results = await this.userRepo.findOne(query);
+
+        return results;
+    }
 
     public async findAll(): Promise<User[]> {
         const results: User[] = await this.userRepo.find();

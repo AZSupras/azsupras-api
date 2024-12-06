@@ -6,7 +6,7 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { IForgotPasswordValues, IResetPasswordValues, JwtPayload } from './interfaces/jwt-payload.interface';
 import { IUser } from 'src/user/dto/user-profile.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
@@ -39,7 +39,6 @@ export class AuthService {
     delete user.password;
 
     if (user.email) {
-      
       const welcomeEmail: CreateEmailDto = {
         to: user.email,
         template: 'welcome',
@@ -116,6 +115,26 @@ export class AuthService {
     });
   }
 
+  async forgotPassword(email: string): Promise<void> {
+    return this.userService.forgotPassword(email)
+      .then((user: User) => {
+        const passwordResetEmail: CreateEmailDto = {
+          to: user.email,
+          template: 'password_reset',
+          context: {
+            username: user.username,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            token: user.passwordResetToken,
+          },
+        }
+
+        const passwordResetEmailJob = this.emailQueue.add(passwordResetEmail);
+      return;
+    });
+  }
+
   async verifyPayload(payload: JwtPayload): Promise<User> {
     let user: User;
 
@@ -159,5 +178,11 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload);
+  }
+
+  async resetPassword({ token, password }: IResetPasswordValues): Promise<User> {
+    const user: User = await this.userService.resetPassword(token, password);
+
+    return user;
   }
 }
