@@ -20,21 +20,13 @@ __decorate([
     __metadata("design:type", Number)
 ], Profile.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Profile.prototype, "phone", void 0);
-__decorate([
-    (0, typeorm_1.Column)('date'),
-    __metadata("design:type", Date)
-], Profile.prototype, "birthday", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Profile.prototype, "website", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Profile.prototype, "occupation", void 0);
+], Profile.prototype, "location", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(type => user_entity_1.User),
     (0, typeorm_1.JoinColumn)(),

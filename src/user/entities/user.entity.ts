@@ -2,11 +2,8 @@ import { Invite } from 'src/invite/invite.entity';
 import { Subscriber } from 'src/subscriber/subscriber.entity';
 import { UserRole } from './user-role.entity';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -35,6 +32,9 @@ export class User {
 
   @Column({ unique: true, nullable: true, select: false })
   email?: string|null;
+
+  @Column('date', { nullable: true })
+  birthday?: Date | null;
 
   @Column({ default: false })
   isBanned: boolean;

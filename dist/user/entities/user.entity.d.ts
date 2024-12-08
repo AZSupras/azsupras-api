@@ -9,6 +9,7 @@ export declare class User {
     firstName?: string | null;
     lastName?: string | null;
     email?: string | null;
+    birthday?: Date | null;
     isBanned: boolean;
     bannedAt: Date;
     bannedReason: string;

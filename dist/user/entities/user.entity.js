@@ -51,6 +51,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
+    (0, typeorm_1.Column)('date', { nullable: true }),
+    __metadata("design:type", Date)
+], User.prototype, "birthday", void 0);
+__decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isBanned", void 0);

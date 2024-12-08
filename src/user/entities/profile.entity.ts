@@ -13,17 +13,11 @@ export class Profile {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column()
-  phone: string;
+  @Column({ nullable: true})
+  website?: string | null;
 
-  @Column('date')
-  birthday: Date;
-
-  @Column()
-  website: string;
-
-  @Column()
-  occupation: string;
+  @Column({ nullable: true})
+  location?: string | null;
 
   @OneToOne(type => User)
   @JoinColumn()
