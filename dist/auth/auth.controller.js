@@ -22,11 +22,18 @@ const local_auth_guard_1 = require("./guards/local-auth.guard");
 const is_authenticated_guard_1 = require("./guards/is-authenticated.guard");
 const is_guest_guard_1 = require("./guards/is-guest.guard");
 const jwt_payload_interface_1 = require("./interfaces/jwt-payload.interface");
+const swagger_1 = require("@nestjs/swagger");
+const app_config_service_1 = require("../app-config/app-config.service");
 let AuthController = class AuthController {
-    constructor(authService) {
+    constructor(authService, appConfigService) {
         this.authService = authService;
+        this.appConfigService = appConfigService;
     }
     async register(signUp) {
+        const { registrationEnabled, } = await this.appConfigService.getLatest();
+        if (!registrationEnabled) {
+            throw new common_1.BadRequestException('Registration is not currently enabled.');
+        }
         const data = await this.authService.register(signUp);
         const response = {
             statusCode: 201,
@@ -89,7 +96,7 @@ let AuthController = class AuthController {
             };
             return response;
         }
-        user = await this.authService.confirmEmail(token);
+        user = await this.authService.confirmEmail(user.id, token);
         if (!user) {
             const response = {
                 statusCode: 400,
@@ -144,6 +151,7 @@ __decorate([
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('login'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_guest_guard_1.IsGuestGuard, local_auth_guard_1.LocalAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, user_decorator_1.AuthUser)()),
@@ -153,6 +161,7 @@ __decorate([
 ], AuthController.prototype, "login", null);
 __decorate([
     (0, common_1.Get)('logout'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -161,6 +170,7 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 __decorate([
     (0, common_1.Get)('/me'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
     __param(0, (0, user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
@@ -196,6 +206,6 @@ __decorate([
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService, app_config_service_1.AppConfigService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

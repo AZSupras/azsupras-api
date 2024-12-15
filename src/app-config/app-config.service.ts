@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { AppConfig } from './app-config.entity';
+import { AppConfig } from './entities/app-config.entity';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 
 @Injectable()
@@ -12,11 +12,7 @@ export class AppConfigService {
   ) {}
 
   public async findAll(): Promise<AppConfig[]> {
-    const results: AppConfig[] = await this.repo.find({
-      order: {
-        createdAt: 'DESC',
-      },
-    });
+    const results: AppConfig[] = await this.repo.find();
 
     return results;
   }
@@ -43,11 +39,11 @@ export class AppConfigService {
     return result;
   }
 
-  public async upsert(newAppConfig: Partial<AppConfig>): Promise<AppConfig> {
+  public async upsert(newAppConfig: CreateAppConfigDto): Promise<AppConfig> {
     let existingConfig: AppConfig = await this.getLatest();
 
     if (existingConfig) {
-      existingConfig = { ...existingConfig, ...newAppConfig };
+      existingConfig = this.repo.merge(existingConfig, newAppConfig );
       await this.repo.update(existingConfig.id, existingConfig);
 
       return existingConfig;

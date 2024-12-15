@@ -21,6 +21,7 @@ const public_guard_1 = require("../../auth/guards/public.guard");
 const is_admin_guard_1 = require("../../auth/guards/is-admin.guard");
 const is_authenticated_guard_1 = require("../../auth/guards/is-authenticated.guard");
 const user_decorator_1 = require("../decorators/user.decorator");
+const swagger_1 = require("@nestjs/swagger");
 let ProfileController = class ProfileController {
     constructor(userService) {
         this.userService = userService;
@@ -44,6 +45,49 @@ let ProfileController = class ProfileController {
         return results;
     }
     async checkUsernameAvailability(username) {
+        if (!username) {
+            return {
+                statusCode: 400,
+                message: 'Username is required',
+                data: false,
+            };
+        }
+        if (username.length < 3) {
+            return {
+                statusCode: 400,
+                message: 'Username must be at least 3 characters long',
+                data: false,
+            };
+        }
+        if (username.length > 20) {
+            return {
+                statusCode: 400,
+                message: 'Username must be at most 20 characters long',
+                data: false,
+            };
+        }
+        if (!/^[a-zA-Z0-9]+$/.test(username)) {
+            return {
+                statusCode: 400,
+                message: 'Username must contain only letters and numbers',
+                data: false,
+            };
+        }
+        if (username.includes(' ')) {
+            return {
+                statusCode: 400,
+                message: 'Username must not contain spaces',
+                data: false,
+            };
+        }
+        const reservedWords = ['admin', 'moderator', 'system', 'support', 'help', 'root', 'administrator'];
+        if (reservedWords.some(word => username.toLowerCase().includes(word))) {
+            return {
+                statusCode: 400,
+                message: 'Username contains reserved words',
+                data: false,
+            };
+        }
         const data = await this.userService.checkUsernameAvailability(username);
         const results = {
             statusCode: 200,
@@ -91,6 +135,7 @@ let ProfileController = class ProfileController {
 exports.ProfileController = ProfileController;
 __decorate([
     (0, common_1.Put)(''),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
     __param(0, (0, user_decorator_1.AuthUser)()),
     __param(1, (0, common_1.Body)()),
@@ -122,6 +167,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, user_decorator_1.AuthUser)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -131,6 +177,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Put)(':username'),
+    (0, swagger_1.ApiBearerAuth)(),
     __param(0, (0, common_1.Param)('username')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -138,7 +185,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "updateUser", null);
 exports.ProfileController = ProfileController = __decorate([
-    (0, common_1.Controller)('u'),
+    (0, common_1.Controller)(['u', 'user', 'profile', 'p']),
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),
     __metadata("design:paramtypes", [user_service_1.UserService])
 ], ProfileController);

@@ -18,12 +18,14 @@ const local_strategy_1 = require("./strategies/local.strategy");
 const jwt_strategy_1 = require("./strategies/jwt.strategy");
 const auth_constants_1 = require("./auth.constants");
 const bull_1 = require("@nestjs/bull");
+const app_config_module_1 = require("../app-config/app-config.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            app_config_module_1.AppConfigModule,
             user_module_1.UserModule,
             passport_1.PassportModule.register({ session: true, defaultStrategy: 'local' }),
             jwt_1.JwtModule.register({
@@ -41,8 +43,7 @@ exports.AuthModule = AuthModule = __decorate([
             }),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy, session_serializer_1.SessionSerializer,
-        ],
+        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy, session_serializer_1.SessionSerializer,],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

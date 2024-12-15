@@ -1,10 +1,12 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { IsAuthenticatedGuard } from 'src/auth/guards/is-authenticated.guard';
-import { IsAdminGuard } from 'src/auth/guards/is-admin.guard';
-import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { IsAuthenticatedGuard } from '@/auth/guards/is-authenticated.guard';
+import { IsAdminGuard } from '@/auth/guards/is-admin.guard';
+import { IResponseWithRelation } from '@/interfaces/IResponse';
 import { IDashboard } from './dto/dashboard-data.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('admin')
 export class AdminController {
     constructor(private readonly adminService: AdminService) {}

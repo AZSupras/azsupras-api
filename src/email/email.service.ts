@@ -5,8 +5,8 @@ import { CreateEmailDto } from './create-email.dto';
 import { Repository } from 'typeorm';
 import { Email } from './email.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserService } from 'src/user/services/user.service';
-import { User } from 'src/user/entities/user.entity';
+import { UserService } from '@/user/services/user.service';
+import { User } from '@/user/entities/user.entity';
 
 export interface EmailVerification {
   userId: string;

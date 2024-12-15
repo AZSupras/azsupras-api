@@ -1,8 +1,8 @@
 import { AppConfigService } from './app-config.service';
-import { AppConfig } from './app-config.entity';
+import { AppConfig } from './entities/app-config.entity';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 import { DeleteResult } from 'typeorm';
-import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { IResponseWithRelation } from '@/interfaces/IResponse';
 export declare class AppConfigController {
     private readonly appConfigService;
     private readonly logger;

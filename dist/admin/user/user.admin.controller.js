@@ -18,12 +18,40 @@ const is_authenticated_guard_1 = require("../../auth/guards/is-authenticated.gua
 const is_admin_guard_1 = require("../../auth/guards/is-admin.guard");
 const user_admin_service_1 = require("./user.admin.service");
 const ban_user_dto_1 = require("../dto/ban-user.dto");
+const swagger_1 = require("@nestjs/swagger");
 let AdminUserController = class AdminUserController {
     constructor(userService) {
         this.userService = userService;
     }
-    async Admin_getAll() {
+    async Admin_getAllUsers() {
         const data = await this.userService.find({
+            select: {
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                birthday: true,
+                isBanned: true,
+                bannedAt: true,
+                bannedReason: true,
+                isPublic: true,
+                isOnline: true,
+                emailVerified: true,
+                emailVerificationToken: true,
+                emailVerifiedAt: true,
+                passwordResetToken: true,
+                passwordResetExpires: true,
+                passwordResetRequestedAt: true,
+                lastLogin: true,
+                createdAt: true,
+                updatedAt: true,
+                inviteId: true,
+                roles: true,
+                bans: true,
+                sentMessages: true,
+                receivedMessages: true,
+            },
             relations: {
                 roles: true,
             }
@@ -36,7 +64,7 @@ let AdminUserController = class AdminUserController {
         };
         return results;
     }
-    async Admin_getOneByUsername(username) {
+    async Admin_getOneUserByUsername(username) {
         const data = await this.userService.findOneByUsername(username);
         const results = {
             statusCode: 200,
@@ -99,6 +127,18 @@ let AdminUserController = class AdminUserController {
         };
         return results;
     }
+    async Admin_deleteUser(username) {
+        const data = await this.userService.deleteUser(username);
+        if (!data) {
+            throw new Error('User not found');
+        }
+        const results = {
+            statusCode: 200,
+            message: 'Successfully deleted user',
+            data,
+        };
+        return results;
+    }
 };
 exports.AdminUserController = AdminUserController;
 __decorate([
@@ -107,7 +147,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], AdminUserController.prototype, "Admin_getAll", null);
+], AdminUserController.prototype, "Admin_getAllUsers", null);
 __decorate([
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Get)(':username'),
@@ -115,7 +155,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], AdminUserController.prototype, "Admin_getOneByUsername", null);
+], AdminUserController.prototype, "Admin_getOneUserByUsername", null);
 __decorate([
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Post)('ban'),
@@ -132,7 +172,16 @@ __decorate([
     __metadata("design:paramtypes", [ban_user_dto_1.UnbanUserDto]),
     __metadata("design:returntype", Promise)
 ], AdminUserController.prototype, "Admin_unbanUser", null);
+__decorate([
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
+    (0, common_1.Delete)(':username'),
+    __param(0, (0, common_1.Param)('username')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminUserController.prototype, "Admin_deleteUser", null);
 exports.AdminUserController = AdminUserController = __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)(['admin/user', 'admin/users']),
     __metadata("design:paramtypes", [user_admin_service_1.AdminUserService])
 ], AdminUserController);

@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HashService } from 'src/hash/hash.service';
-import { LoggerService } from 'src/logger/logger.service';
-import { CreateUserRoleDto } from 'src/user/dto/create-user-role.dto';
-import { UserRole } from 'src/user/entities/user-role.entity';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { User } from 'src/user/entities/user.entity';
+import { HashService } from '@/hash/hash.service';
+import { LoggerService } from '@/logger/logger.service';
+import { CreateUserRoleDto } from '@/user/dto/create-user-role.dto';
+import { UserRole } from '@/user/entities/user-role.entity';
+import { User } from '@/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { eachOfSeries } from 'async';
-import { CreateAppConfigDto } from 'src/app-config/dto/create-app-config.dto';
-import { AppConfigService } from 'src/app-config/app-config.service';
-import { AppConfig } from 'src/app-config/app-config.entity';
+import { AppConfigService } from '@/app-config/app-config.service';
+import { AppConfig } from '@/app-config/entities/app-config.entity';
 import SeedData, { SeedUserDto } from './SeederData';
 
 @Injectable()
@@ -55,39 +53,85 @@ export class SeederService {
       return;
     } else {
       // seed userRoles, pass in the user roles to seed, and return the user roles that were created.
-      await this._seedUserRoles(SeedData.userRoles);
+      await this._seedUserRoles(SeedData.userRoles)
+        .then(async (roles: UserRole[]) => {
+          this.logger.debug(`${roles.length} Roles seeded.`);
+
+          let users: User[] = await this._seedUsers(SeedData.users);
+          this.logger.debug(`${users.length} Users seeded.`);
+        })
+        .catch((err) => {
+          this.logger.error('Error seeding user roles:', err);
+        });
       // then seed users
-      await this._seedUsers(SeedData.users);
       // then print a message that seeding is complete with the number of users and roles created.
     }
   }
 
-  private async _seedUserRoles(userRoles: CreateUserRoleDto[]) {
+  private async _seedUserRoles(userRoles: CreateUserRoleDto[]): Promise<UserRole[]> {
+    return new Promise(async (resolve, reject) => {
     if (!userRoles || userRoles.length === 0) {
       this.logger.debug('No user roles to seed.');
-      return;
+      return reject('no user roles to seed');
     }
 
     this.logger.debug(`There are ${userRoles.length} user roles to seed.`);
     const roles: UserRole[] = [];
+      // iterate over the user roles and seed them one by one.
+      eachOfSeries(
+        userRoles,
+        async (userRole: CreateUserRoleDto) => {
+          const role: UserRole = await this._seedUserRole(userRole);
+          roles.push(role);
 
-    // iterate over the user roles and seed them one by one.
-    eachOfSeries(
-      userRoles,
-      async (userRole: CreateUserRoleDto) => {
-        const role: UserRole = await this._seedUserRole(userRole);
-        roles.push(role);
-        return role;
-      },
-      (err) => {
-        if (err) {
-          this.logger.error('Error seeding user roles:', err);
-          return;
-        }
+          return role;
+        },
+        (err) => {
+          if (err) {
+            this.logger.error('Error seeding user roles:', err);
+            return reject(err);
+          }
 
-        this.logger.debug('UserRole seeding complete.');
-      },
-    );
+          this.logger.debug('UserRole seeding complete.');
+          return resolve(roles);
+        },
+      );
+    })
+  }
+
+  private async _seedUsers(seedUsers: SeedUserDto[]): Promise<User[]> {
+    return new Promise(async (resolve, reject) => {
+      if (!seedUsers || seedUsers.length === 0) {
+        this.logger.debug('No users to seed.');
+        return reject('no users to seed');
+      }
+
+      this.logger.debug(`There are ${seedUsers.length} Users to seed.`);
+      const users: User[] = [];
+
+      // iterate over the user roles and seed them one by one.
+      eachOfSeries(
+        seedUsers,
+        async (createUser: SeedUserDto, i: number) => {
+          this.logger.debug(`Seeding user ${i + 1} of ${seedUsers.length}.`);
+
+          const user: User = await this._seedUser(createUser);
+
+          users.push(user);
+
+          return user;
+        },
+        (err) => {
+          if (err) {
+            this.logger.error('Error seeding users:', err);
+            return reject(err);
+          }
+
+          this.logger.debug('User seeding complete.');
+          return resolve(users);
+        },
+      );
+    });
   }
 
   private async _seedUserRole(userRole: CreateUserRoleDto) {
@@ -113,38 +157,6 @@ export class SeederService {
     return role;
   }
 
-  private async _seedUsers(seedUsers: SeedUserDto[]) {
-    if (!seedUsers || seedUsers.length === 0) {
-      this.logger.debug('No users to seed.');
-      return;
-    }
-
-    this.logger.debug(`There are ${seedUsers.length} Users to seed.`);
-    const users: User[] = [];
-
-    // iterate over the user roles and seed them one by one.
-    eachOfSeries(
-      seedUsers,
-      async (createUser: SeedUserDto, i: number) => {
-        this.logger.debug(`Seeding user ${i + 1} of ${seedUsers.length}.`);
-
-        const user: User = await this._seedUser(createUser);
-
-        users.push(user);
-
-        return user;
-      },
-      (err) => {
-        if (err) {
-          this.logger.error('Error seeding users:', err);
-          return;
-        }
-
-        this.logger.debug('User seeding complete.');
-      },
-    );
-  }
-
   private async _seedUser(user: SeedUserDto) {
     this.logger.debug(
       `Checking if user '${user.username}' exists in the database.`,
@@ -166,6 +178,8 @@ export class SeederService {
         .createQueryBuilder('roles')
         .where('roles.slug IN (:...slugs)', { slugs: user.roleSlugs })
         .getMany();
+
+      console.log(roles);
 
       dbUser = this.userRepo.create({
         username: user.username,

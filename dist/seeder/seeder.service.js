@@ -54,27 +54,60 @@ let SeederService = SeederService_1 = class SeederService {
             return;
         }
         else {
-            await this._seedUserRoles(SeederData_1.default.userRoles);
-            await this._seedUsers(SeederData_1.default.users);
+            await this._seedUserRoles(SeederData_1.default.userRoles)
+                .then(async (roles) => {
+                this.logger.debug(`${roles.length} Roles seeded.`);
+                let users = await this._seedUsers(SeederData_1.default.users);
+                this.logger.debug(`${users.length} Users seeded.`);
+            })
+                .catch((err) => {
+                this.logger.error('Error seeding user roles:', err);
+            });
         }
     }
     async _seedUserRoles(userRoles) {
-        if (!userRoles || userRoles.length === 0) {
-            this.logger.debug('No user roles to seed.');
-            return;
-        }
-        this.logger.debug(`There are ${userRoles.length} user roles to seed.`);
-        const roles = [];
-        (0, async_1.eachOfSeries)(userRoles, async (userRole) => {
-            const role = await this._seedUserRole(userRole);
-            roles.push(role);
-            return role;
-        }, (err) => {
-            if (err) {
-                this.logger.error('Error seeding user roles:', err);
-                return;
+        return new Promise(async (resolve, reject) => {
+            if (!userRoles || userRoles.length === 0) {
+                this.logger.debug('No user roles to seed.');
+                return reject('no user roles to seed');
             }
-            this.logger.debug('UserRole seeding complete.');
+            this.logger.debug(`There are ${userRoles.length} user roles to seed.`);
+            const roles = [];
+            (0, async_1.eachOfSeries)(userRoles, async (userRole) => {
+                const role = await this._seedUserRole(userRole);
+                roles.push(role);
+                return role;
+            }, (err) => {
+                if (err) {
+                    this.logger.error('Error seeding user roles:', err);
+                    return reject(err);
+                }
+                this.logger.debug('UserRole seeding complete.');
+                return resolve(roles);
+            });
+        });
+    }
+    async _seedUsers(seedUsers) {
+        return new Promise(async (resolve, reject) => {
+            if (!seedUsers || seedUsers.length === 0) {
+                this.logger.debug('No users to seed.');
+                return reject('no users to seed');
+            }
+            this.logger.debug(`There are ${seedUsers.length} Users to seed.`);
+            const users = [];
+            (0, async_1.eachOfSeries)(seedUsers, async (createUser, i) => {
+                this.logger.debug(`Seeding user ${i + 1} of ${seedUsers.length}.`);
+                const user = await this._seedUser(createUser);
+                users.push(user);
+                return user;
+            }, (err) => {
+                if (err) {
+                    this.logger.error('Error seeding users:', err);
+                    return reject(err);
+                }
+                this.logger.debug('User seeding complete.');
+                return resolve(users);
+            });
         });
     }
     async _seedUserRole(userRole) {
@@ -91,26 +124,6 @@ let SeederService = SeederService_1 = class SeederService {
         this.logger.debug(`Role '${role.slug}' has been created.`);
         return role;
     }
-    async _seedUsers(seedUsers) {
-        if (!seedUsers || seedUsers.length === 0) {
-            this.logger.debug('No users to seed.');
-            return;
-        }
-        this.logger.debug(`There are ${seedUsers.length} Users to seed.`);
-        const users = [];
-        (0, async_1.eachOfSeries)(seedUsers, async (createUser, i) => {
-            this.logger.debug(`Seeding user ${i + 1} of ${seedUsers.length}.`);
-            const user = await this._seedUser(createUser);
-            users.push(user);
-            return user;
-        }, (err) => {
-            if (err) {
-                this.logger.error('Error seeding users:', err);
-                return;
-            }
-            this.logger.debug('User seeding complete.');
-        });
-    }
     async _seedUser(user) {
         this.logger.debug(`Checking if user '${user.username}' exists in the database.`);
         let dbUser = await this.userRepo.findOne({
@@ -125,6 +138,7 @@ let SeederService = SeederService_1 = class SeederService {
                 .createQueryBuilder('roles')
                 .where('roles.slug IN (:...slugs)', { slugs: user.roleSlugs })
                 .getMany();
+            console.log(roles);
             dbUser = this.userRepo.create({
                 username: user.username,
                 password: hash,

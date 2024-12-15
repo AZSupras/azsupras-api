@@ -3,7 +3,7 @@ import { UserService } from "./services/user.service";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { User } from "./entities/user.entity";
 import { eachOfSeries } from "async";
-import { LoggerService } from "src/logger/logger.service";
+import { LoggerService } from "@/logger/logger.service";
 
 @Injectable()
 export class UserProcessor {

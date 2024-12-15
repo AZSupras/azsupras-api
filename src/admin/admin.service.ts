@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LoggerService } from 'src/logger/logger.service';
-import { User } from 'src/user/entities/user.entity';
+import { LoggerService } from '@/logger/logger.service';
+import { User } from '@/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { IDashboard } from './dto/dashboard-data.dto';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '@/user/services/user.service';
 
 @Injectable()
 export class AdminService {

@@ -17,13 +17,9 @@ exports.SignUpDto = SignUpDto;
 __decorate([
     (0, class_validator_1.IsDefined)(),
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], SignUpDto.prototype, "username", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], SignUpDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsDefined)(),
     (0, class_validator_1.IsNotEmpty)(),
@@ -32,10 +28,20 @@ __decorate([
 ], SignUpDto.prototype, "password", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], SignUpDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], SignUpDto.prototype, "firstName", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], SignUpDto.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], SignUpDto.prototype, "inviteCode", void 0);
 //# sourceMappingURL=sign-up.dto.js.map

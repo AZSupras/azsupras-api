@@ -1,5 +1,5 @@
 import { ISentMessageInfo } from './email.service';
-import { Subscriber } from 'src/subscriber/subscriber.entity';
+import { Subscriber } from '@/subscriber/subscriber.entity';
 export declare class Email {
     id: string;
     to: string;

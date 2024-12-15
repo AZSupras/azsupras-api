@@ -8,4 +8,5 @@ export declare class CreateAppConfigDto {
     passwordAlphRequired?: boolean;
     passwordNumRequired?: boolean;
     passwordSpecialCharRequired?: boolean;
+    registrationOpenDate?: Date;
 }

@@ -1,6 +1,6 @@
-import { CreateAppConfigDto } from "src/app-config/dto/create-app-config.dto";
-import { CreateUserRoleDto } from "src/user/dto/create-user-role.dto";
-import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { CreateAppConfigDto } from "@/app-config/dto/create-app-config.dto";
+import { CreateUserRoleDto } from "@/user/dto/create-user-role.dto";
+import { CreateUserDto } from "@/user/dto/create-user.dto";
 
 export type SeedUserDto = CreateUserDto & {
     roleSlugs: string[];
@@ -9,9 +9,9 @@ export type SeedUserDto = CreateUserDto & {
 };
 
 export type SeedData = {
-    userRoles: CreateUserRoleDto[];
-    users: SeedUserDto[];
-    appConfig: CreateAppConfigDto;
+    userRoles?: CreateUserRoleDto[];
+    users?: SeedUserDto[];
+    appConfig?: CreateAppConfigDto;
 };
 
 export const SeedData_UserRoles: CreateUserRoleDto[] = [
@@ -22,6 +22,14 @@ export const SeedData_UserRoles: CreateUserRoleDto[] = [
     {
         slug: 'user',
         name: 'User',
+    },
+    {
+        slug: 'member',
+        name: 'Member',
+    },
+    {
+        slug: 'premium',
+        name: 'Premium Member',
     },
 ];
 
@@ -35,7 +43,7 @@ export const SeedData_Users: SeedUserDto[] = [
         firstName: 'Gordon',
         lastName: 'Freeman',
         isPublic: false,
-        roleSlugs: ['admin'],
+        roleSlugs: ['admin', 'user'],
     },
 ];
 

@@ -5,12 +5,12 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { IForgotPasswordValues, IResetPasswordValues, JwtPayload } from './interfaces/jwt-payload.interface';
-import { IUser } from 'src/user/dto/user-profile.dto';
+import { IUser } from '@/user/dto/user-profile.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { CreateEmailDto } from 'src/email/create-email.dto';
+import { CreateEmailDto } from '@/email/create-email.dto';
 
 @Injectable()
 export class AuthService {
@@ -150,7 +150,9 @@ export class AuthService {
   }
 
   public async findUserByEmailVerificationToken(token: string): Promise<User> {
-    return await this.userService.findUserByEmailVerificationToken(token);
+    const results: User = await this.userService.findUserByEmailVerificationToken(token);
+    
+    return results;
   }
 
   async findUserByUserId(userId: string): Promise<User|null> {
@@ -163,9 +165,9 @@ export class AuthService {
     }
   }
 
-  async confirmEmail(token: string) {
+  async confirmEmail(userId: string, token: string) {
     try {
-      let user: User = await this.userService.confirmEmail(token);
+      let user: User = await this.userService.confirmEmail(userId, token);
       return user;
     } catch(err) {
       throw new Error(err.message);

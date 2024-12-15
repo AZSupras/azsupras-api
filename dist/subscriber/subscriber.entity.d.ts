@@ -1,5 +1,5 @@
-import { Email } from 'src/email/email.entity';
-import { User } from 'src/user/entities/user.entity';
+import { Email } from '@/email/email.entity';
+import { User } from '@/user/entities/user.entity';
 export declare class Subscriber {
     id: string;
     email: string;

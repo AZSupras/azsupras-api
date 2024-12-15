@@ -1,9 +1,9 @@
-import { Invite } from 'src/invite/invite.entity';
-import { Subscriber } from 'src/subscriber/subscriber.entity';
+import { Subscriber } from '@/subscriber/subscriber.entity';
 import { UserRole } from './user-role.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -11,14 +11,15 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { hash, compare, genSalt, } from 'bcryptjs';
-import { Ban } from 'src/admin/ban/ban/ban.entity';
+import { Ban } from '@/admin/ban/ban/ban.entity';
+import { Message } from '@/message/entities/message.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false, })
   username: string;
 
   @Column({ nullable: false, select: false })
@@ -105,9 +106,8 @@ export class User {
   @OneToOne(() => Subscriber)
   subscriber: Subscriber;
 
-  // one to one relationship with Invite
-  @OneToOne(() => Invite, (invite) => invite.user)
-  invite: Invite;
+  @Column({ nullable: true })
+  inviteId?: string | null;
 
   @ManyToMany(() => UserRole, (role) => role.users)
   @JoinTable()
@@ -116,6 +116,12 @@ export class User {
   // user may have more than one ban
   @OneToMany(() => Ban, (ban) => ban.user)
   bans: Ban[];
+
+  @OneToMany(() => Message, (message) => message.sender)
+  sentMessages: Message[];
+
+  @OneToMany(() => Message, (message) => message.recipient)
+  receivedMessages: Message[];
 
   constructor(data: Partial<User> = {}) {
     Object.assign(this, data);

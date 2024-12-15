@@ -1,7 +1,7 @@
 import { UserUpdate } from '../dto/user-update.dto';
 import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
-import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { IResponseWithRelation } from '@/interfaces/IResponse';
 import { PublicUserDto } from '../dto/public-user.dto';
 export declare class ProfileController {
     private readonly userService;

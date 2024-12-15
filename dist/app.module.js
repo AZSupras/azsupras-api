@@ -30,7 +30,6 @@ const subscriber_module_1 = require("./subscriber/subscriber.module");
 const subscriber_entity_1 = require("./subscriber/subscriber.entity");
 const subscriber_service_1 = require("./subscriber/subscriber.service");
 const hash_service_1 = require("./hash/hash.service");
-const invite_module_1 = require("./invite/invite.module");
 const seeder_module_1 = require("./seeder/seeder.module");
 const hash_module_1 = require("./hash/hash.module");
 const seeder_service_1 = require("./seeder/seeder.service");
@@ -47,6 +46,7 @@ const admin_controller_1 = require("./admin/admin.controller");
 const admin_module_1 = require("./admin/admin.module");
 const help_module_1 = require("./help/help.module");
 const schedule_1 = require("@nestjs/schedule");
+const message_module_1 = require("./message/message.module");
 const configModuleOptions = {
     isGlobal: true,
     envFilePath: ['.env', '.env.local'],
@@ -110,11 +110,11 @@ exports.AppModule = AppModule = AppModule_1 = __decorate([
             }),
             schedule_1.ScheduleModule.forRoot(),
             bull_1.BullModule.forRoot(schedulerConfig),
+            message_module_1.MessageModule,
             user_module_1.UserModule,
             email_module_1.EmailModule,
             newsletter_module_1.NewsletterModule,
             subscriber_module_1.SubscriberModule,
-            invite_module_1.InviteModule,
             seeder_module_1.SeederModule,
             hash_module_1.HashModule,
             app_config_module_1.AppConfigModule,

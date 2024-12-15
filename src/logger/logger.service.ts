@@ -7,7 +7,7 @@ import {
   ConsoleLoggerOptions,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AppConfigService } from 'src/app-config/app-config.service';
+import { AppConfigService } from '@/app-config/app-config.service';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class LoggerService extends ConsoleLogger implements _LoggerService {

@@ -17,13 +17,11 @@ exports.AdminUserService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const logger_service_1 = require("../../logger/logger.service");
-const user_role_entity_1 = require("../../user/entities/user-role.entity");
 const user_entity_1 = require("../../user/entities/user.entity");
 const typeorm_2 = require("typeorm");
 let AdminUserService = AdminUserService_1 = class AdminUserService {
-    constructor(userRepo, roleRepo) {
+    constructor(userRepo) {
         this.userRepo = userRepo;
-        this.roleRepo = roleRepo;
         this.logger = new logger_service_1.LoggerService(AdminUserService_1.name);
     }
     async find(query) {
@@ -45,6 +43,10 @@ let AdminUserService = AdminUserService_1 = class AdminUserService {
             }
         });
         return results;
+    }
+    async deleteUser(username) {
+        const user = await this.findOneByUsername(username);
+        return user;
     }
     async banUser({ username, reason }) {
         if (!username) {
@@ -79,8 +81,6 @@ exports.AdminUserService = AdminUserService;
 exports.AdminUserService = AdminUserService = AdminUserService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __param(1, (0, typeorm_1.InjectRepository)(user_role_entity_1.UserRole)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], AdminUserService);
 //# sourceMappingURL=user.admin.service.js.map

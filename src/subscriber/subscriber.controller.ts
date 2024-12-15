@@ -1,8 +1,8 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Request, Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { Queue } from 'bull';
-import { HashService } from 'src/hash/hash.service';
-import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { HashService } from '@/hash/hash.service';
+import { IResponseWithRelation } from '@/interfaces/IResponse';
 import { CreateSubscriberDto } from './create-subscriber.dto';
 import { SubscriberService } from './subscriber.service';
 import { Subscriber } from './subscriber.entity';

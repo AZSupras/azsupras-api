@@ -6,6 +6,7 @@ const logger_service_1 = require("./logger/logger.service");
 const app_module_1 = require("./app.module");
 const SeederData_1 = require("./seeder/SeederData");
 const setup_1 = require("./setup");
+const swagger_1 = require("@nestjs/swagger");
 const logger = new logger_service_1.LoggerService('Main');
 async function bootstrap() {
     const applicationOptions = {
@@ -22,6 +23,16 @@ async function bootstrap() {
     const apiHost = config.get('API_HOST') || 'localhost';
     const apiPort = config.get('API_PORT') || 3000;
     const apiPrefix = config.get('API_PREFIX');
+    const swaggerConfig = new swagger_1.DocumentBuilder()
+        .setTitle('Arizona Supra\'s Api')
+        .setDescription('The Arizona Supra\'s Api description')
+        .setVersion('1.0')
+        .addBearerAuth()
+        .build();
+    const documentFactory = () => swagger_1.SwaggerModule.createDocument(app, swaggerConfig);
+    swagger_1.SwaggerModule.setup('api/swagger', app, documentFactory, {
+        jsonDocumentUrl: 'api/swagger/json',
+    });
     (0, setup_1.setup)(app);
     app.setGlobalPrefix(apiPrefix);
     await app.listen(apiPort, apiHost);

@@ -1,4 +1,4 @@
-import { IsDefined, IsNotEmpty, IsOptional } from "class-validator";
+import { IsDateString, IsDefined, IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateAppConfigDto {
   @IsDefined()
@@ -20,4 +20,8 @@ export class CreateAppConfigDto {
   passwordNumRequired?: boolean;
   @IsOptional()
   passwordSpecialCharRequired?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  registrationOpenDate?: Date;
 }

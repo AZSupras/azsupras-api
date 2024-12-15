@@ -19,6 +19,7 @@ const app_config_service_1 = require("./app-config.service");
 const create_app_config_dto_1 = require("./dto/create-app-config.dto");
 const is_authenticated_guard_1 = require("../auth/guards/is-authenticated.guard");
 const is_admin_guard_1 = require("../auth/guards/is-admin.guard");
+const swagger_1 = require("@nestjs/swagger");
 let AppConfigController = AppConfigController_1 = class AppConfigController {
     constructor(appConfigService) {
         this.appConfigService = appConfigService;
@@ -83,15 +84,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppConfigController.prototype, "getLatestConfig", null);
 __decorate([
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Get)('all'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AppConfigController.prototype, "getAllConfigs", null);
 __decorate([
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Post)(),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_app_config_dto_1.CreateAppConfigDto]),

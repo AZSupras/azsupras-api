@@ -1,42 +1,53 @@
 import {
-    Body,
-    ClassSerializerInterceptor,
-    Controller,
-    Get,
-    HttpCode,
-    HttpStatus,
-    InternalServerErrorException,
-    Param,
-    Post,
-    Query,
-    Req,
-    UseGuards,
-    UseInterceptors,
-  } from '@nestjs/common';
-  
-  import { AuthUser } from '../user/decorators/user.decorator';
-  import { User } from '../user/entities/user.entity';
-  import { AuthService } from './auth.service';
-  import { SignUpDto } from './dto/sign-up.dto';
-  import { JWTAuthGuard } from './guards/jwt-auth.guard';
-  import { LocalAuthGuard } from './guards/local-auth.guard';
-  import { TokenInterceptor } from './interceptors/token.interceptor';
-  import { Public } from './guards/public.guard';
-  import { IResponse, IResponseWithRelation } from 'src/interfaces/IResponse';
-  import { Request } from 'express';
+  BadRequestException,
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  InternalServerErrorException,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { AuthUser } from '../user/decorators/user.decorator';
+import { User } from '../user/entities/user.entity';
+import { AuthService } from './auth.service';
+import { SignUpDto } from './dto/sign-up.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { IResponse, IResponseWithRelation } from '@/interfaces/IResponse';
+import { Request } from 'express';
 import { IsAuthenticatedGuard } from './guards/is-authenticated.guard';
 import { IsGuestGuard } from './guards/is-guest.guard';
 import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-payload.interface';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AppConfigService } from '@/app-config/app-config.service';
+import { AppConfig } from '@/app-config/entities/app-config.entity';
 
   @Controller('auth')
   @UseInterceptors(ClassSerializerInterceptor)
   export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService, private readonly appConfigService: AppConfigService) {}
   
     @Post('register')
     @UseGuards(IsGuestGuard)
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() signUp: SignUpDto): Promise<IResponseWithRelation<User>> {
+      // check if registration is enabled, if it is not we are only allowing registration with invite code
+      const {
+        registrationEnabled,
+      }: AppConfig = await this.appConfigService.getLatest();
+
+      // if registration is not enabled and no invite code is provided, we throw an error
+      if (!registrationEnabled) {
+        throw new BadRequestException('Registration is not currently enabled.');
+      }
+      
+      // if registration is enabled, we can register the user without an invite code
       const data: User = await this.authService.register(signUp);
 
       const response: IResponseWithRelation<User> = {
@@ -49,6 +60,7 @@ import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-pa
     }
   
     @Post('login')
+    @ApiBearerAuth()
     @UseGuards(IsGuestGuard, LocalAuthGuard)
     @HttpCode(HttpStatus.OK)
     async login(@AuthUser() user: User): Promise<IResponseWithRelation<User>> {
@@ -62,6 +74,7 @@ import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-pa
     }
 
     @Get('logout')
+    @ApiBearerAuth()
     @UseGuards(IsAuthenticatedGuard)
     async logout(@Req() request: Request): Promise<IResponse> {
       await this.authService.logout(request);
@@ -75,6 +88,7 @@ import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-pa
     }
   
     @Get('/me')
+    @ApiBearerAuth()
     @UseGuards(IsAuthenticatedGuard)
     me(@AuthUser() user: User): IResponseWithRelation<User> {
 
@@ -128,7 +142,7 @@ import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-pa
         return response;
       }
 
-      user = await this.authService.confirmEmail(token);
+      user = await this.authService.confirmEmail(user.id, token);
 
       if (!user) {
         const response: IResponse = {

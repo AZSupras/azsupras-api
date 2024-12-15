@@ -16,17 +16,13 @@ exports.AppConfigService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const app_config_entity_1 = require("./app-config.entity");
+const app_config_entity_1 = require("./entities/app-config.entity");
 let AppConfigService = class AppConfigService {
     constructor(repo) {
         this.repo = repo;
     }
     async findAll() {
-        const results = await this.repo.find({
-            order: {
-                createdAt: 'DESC',
-            },
-        });
+        const results = await this.repo.find();
         return results;
     }
     async findOneById(id) {
@@ -49,7 +45,7 @@ let AppConfigService = class AppConfigService {
     async upsert(newAppConfig) {
         let existingConfig = await this.getLatest();
         if (existingConfig) {
-            existingConfig = { ...existingConfig, ...newAppConfig };
+            existingConfig = this.repo.merge(existingConfig, newAppConfig);
             await this.repo.update(existingConfig.id, existingConfig);
             return existingConfig;
         }

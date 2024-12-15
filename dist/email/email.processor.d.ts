@@ -1,7 +1,7 @@
 import { Job } from 'bull';
 import { CreateEmailDto } from './create-email.dto';
 import { EmailService } from './email.service';
-import { SubscriberService } from 'src/subscriber/subscriber.service';
+import { SubscriberService } from '@/subscriber/subscriber.service';
 export declare class EmailProcessor {
     private readonly emailService;
     private readonly subscriberService;

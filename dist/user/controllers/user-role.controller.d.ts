@@ -1,5 +1,5 @@
 import { UserService } from '../services/user.service';
-import { IResponseWithRelation } from 'src/interfaces/IResponse';
+import { IResponseWithRelation } from '@/interfaces/IResponse';
 import { User } from '../entities/user.entity';
 import { UserRoleService } from '../services/user-role.service';
 import { UserRole } from '../entities/user-role.entity';

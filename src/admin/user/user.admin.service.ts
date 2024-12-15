@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { LoggerService } from "src/logger/logger.service";
-import { BanUserDto } from "src/admin/dto/ban-user.dto";
-import { UserRole } from "src/user/entities/user-role.entity";
-import { User } from "src/user/entities/user.entity";
-import { UserService } from "src/user/services/user.service";
+import { LoggerService } from "@/logger/logger.service";
+import { BanUserDto } from "@/admin/dto/ban-user.dto";
+import { User } from "@/user/entities/user.entity";
 import { FindManyOptions, FindOneOptions, Repository } from "typeorm";
 
 @Injectable()
@@ -14,11 +12,7 @@ export class AdminUserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
-        @InjectRepository(UserRole)
-        private readonly roleRepo: Repository<UserRole>,
     ) { }
-
-
 
     public async find(query: FindManyOptions<User>): Promise<User[]> {
         const results = await this.userRepo.find(query);
@@ -46,6 +40,12 @@ export class AdminUserService {
         });
 
         return results;
+    }
+
+    public async deleteUser(username: string): Promise<User> {
+        const user: User = await this.findOneByUsername(username);
+
+        return user;
     }
 
     public async banUser({ username, reason }: BanUserDto): Promise<User> {

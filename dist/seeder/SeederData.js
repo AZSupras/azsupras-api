@@ -10,6 +10,14 @@ exports.SeedData_UserRoles = [
         slug: 'user',
         name: 'User',
     },
+    {
+        slug: 'member',
+        name: 'Member',
+    },
+    {
+        slug: 'premium',
+        name: 'Premium Member',
+    },
 ];
 exports.SeedData_Users = [
     {
@@ -21,7 +29,7 @@ exports.SeedData_Users = [
         firstName: 'Gordon',
         lastName: 'Freeman',
         isPublic: false,
-        roleSlugs: ['admin'],
+        roleSlugs: ['admin', 'user'],
     },
 ];
 exports.SeedData_AppConfig = {

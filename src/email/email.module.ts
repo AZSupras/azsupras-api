@@ -7,10 +7,10 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { EmailProcessor } from './email.processor';
-import { SubscriberService } from 'src/subscriber/subscriber.service';
-import { Subscriber } from 'src/subscriber/subscriber.entity';
-import { HashService } from 'src/hash/hash.service';
-import { UserModule } from 'src/user/user.module';
+import { SubscriberService } from '@/subscriber/subscriber.service';
+import { Subscriber } from '@/subscriber/subscriber.entity';
+import { HashService } from '@/hash/hash.service';
+import { UserModule } from '@/user/user.module';
 
 @Module({
   imports: [

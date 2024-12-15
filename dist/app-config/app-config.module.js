@@ -10,14 +10,14 @@ exports.AppConfigModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_config_service_1 = require("./app-config.service");
 const app_config_controller_1 = require("./app-config.controller");
-const app_config_entity_1 = require("./app-config.entity");
+const app_config_entity_1 = require("./entities/app-config.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 let AppConfigModule = class AppConfigModule {
 };
 exports.AppConfigModule = AppConfigModule;
 exports.AppConfigModule = AppConfigModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([app_config_entity_1.AppConfig])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([app_config_entity_1.AppConfig]),],
         controllers: [app_config_controller_1.AppConfigController],
         exports: [app_config_service_1.AppConfigService, typeorm_1.TypeOrmModule],
         providers: [app_config_service_1.AppConfigService],

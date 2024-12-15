@@ -1,7 +1,7 @@
-import { Invite } from 'src/invite/invite.entity';
-import { Subscriber } from 'src/subscriber/subscriber.entity';
+import { Subscriber } from '@/subscriber/subscriber.entity';
 import { UserRole } from './user-role.entity';
-import { Ban } from 'src/admin/ban/ban/ban.entity';
+import { Ban } from '@/admin/ban/ban/ban.entity';
+import { Message } from '@/message/entities/message.entity';
 export declare class User {
     id: string;
     username: string;
@@ -26,9 +26,11 @@ export declare class User {
     createdAt: Date;
     updatedAt: Date;
     subscriber: Subscriber;
-    invite: Invite;
+    inviteId?: string | null;
     roles: UserRole[];
     bans: Ban[];
+    sentMessages: Message[];
+    receivedMessages: Message[];
     constructor(data?: Partial<User>);
     checkPassword(plainPassword: string): Promise<boolean>;
 }

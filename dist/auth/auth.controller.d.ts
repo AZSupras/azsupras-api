@@ -2,12 +2,14 @@
 import { User } from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import { IResponse, IResponseWithRelation } from 'src/interfaces/IResponse';
+import { IResponse, IResponseWithRelation } from '@/interfaces/IResponse';
 import { Request } from 'express';
 import { IForgotPasswordValues, IResetPasswordValues } from './interfaces/jwt-payload.interface';
+import { AppConfigService } from '@/app-config/app-config.service';
 export declare class AuthController {
     private readonly authService;
-    constructor(authService: AuthService);
+    private readonly appConfigService;
+    constructor(authService: AuthService, appConfigService: AppConfigService);
     register(signUp: SignUpDto): Promise<IResponseWithRelation<User>>;
     login(user: User): Promise<IResponseWithRelation<User>>;
     logout(request: Request): Promise<IResponse>;

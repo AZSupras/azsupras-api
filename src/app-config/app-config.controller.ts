@@ -10,12 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AppConfigService } from './app-config.service';
-import { AppConfig } from './app-config.entity';
+import { AppConfig } from './entities/app-config.entity';
 import { CreateAppConfigDto } from './dto/create-app-config.dto';
 import { DeleteResult } from 'typeorm';
-import { IResponseWithRelation } from 'src/interfaces/IResponse';
-import { IsAuthenticatedGuard } from 'src/auth/guards/is-authenticated.guard';
-import { IsAdminGuard } from 'src/auth/guards/is-admin.guard';
+import { IResponseWithRelation } from '@/interfaces/IResponse';
+import { IsAuthenticatedGuard } from '@/auth/guards/is-authenticated.guard';
+import { IsAdminGuard } from '@/auth/guards/is-admin.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('config')
 export class AppConfigController {
@@ -40,8 +41,9 @@ export class AppConfigController {
     return response;
   }
 
-  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   @Get('all')
+  @ApiBearerAuth()
+  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   async getAllConfigs() {
     const data: AppConfig[] = await this.appConfigService.findAll();
 
@@ -60,8 +62,9 @@ export class AppConfigController {
     return response;
   }
 
-  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
   async upsert(
     @Body() createAppConfigDto: CreateAppConfigDto,
   ): Promise<IResponseWithRelation<AppConfig>> {

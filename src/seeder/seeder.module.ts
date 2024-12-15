@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRole } from 'src/user/entities/user-role.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserRole } from '@/user/entities/user-role.entity';
+import { User } from '@/user/entities/user.entity';
 import { SeederService } from './seeder.service';
-import { HashService } from 'src/hash/hash.service';
-import { HashModule } from 'src/hash/hash.module';
-import { AppConfigModule } from 'src/app-config/app-config.module';
-import { LoggerModule } from 'src/logger/logger.module';
+import { HashService } from '@/hash/hash.service';
+import { HashModule } from '@/hash/hash.module';
+import { AppConfigModule } from '@/app-config/app-config.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [

@@ -1,5 +1,5 @@
-import { HashService } from 'src/hash/hash.service';
-import { UserRoleService } from 'src/user/services/user-role.service';
+import { HashService } from '@/hash/hash.service';
+import { UserRoleService } from '@/user/services/user-role.service';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { PublicUserDto } from '../dto/public-user.dto';
@@ -25,7 +25,7 @@ export declare class UserService {
     forgotPassword(email: string): Promise<User>;
     findEmailVerificationTokenUsername(username: string): Promise<User>;
     findUserByEmailVerificationToken(emailVerificationToken: string): Promise<User>;
-    confirmEmail(token: string): Promise<User>;
+    confirmEmail(userId: string, token: string): Promise<User>;
     findOneByIdentity(identity: string, options?: FindOneOptions<User>): Promise<User>;
     findOneByIdentity_withPassword(identity: string, options?: FindOneOptions<User>): Promise<User>;
     checkUsernameAvailability(username: string): Promise<boolean>;

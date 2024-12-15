@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BanService } from './ban.service';
-import { UserRole } from 'src/user/entities/user-role.entity';
-import { User } from 'src/user/entities/user.entity';
+import { UserRole } from '@/user/entities/user-role.entity';
+import { User } from '@/user/entities/user.entity';
 import { Ban } from './ban.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 

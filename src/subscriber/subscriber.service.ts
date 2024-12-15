@@ -6,7 +6,7 @@ import {
   CreateSubscriberDto,
   UpdateSubscriberDto,
 } from './create-subscriber.dto';
-import { HashService } from 'src/hash/hash.service';
+import { HashService } from '@/hash/hash.service';
 
 @Injectable()
 export class SubscriberService {

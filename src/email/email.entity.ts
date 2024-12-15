@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ISentMessageInfo } from './email.service';
-import { Subscriber } from 'src/subscriber/subscriber.entity';
+import { Subscriber } from '@/subscriber/subscriber.entity';
 
 @Entity()
 export class Email {

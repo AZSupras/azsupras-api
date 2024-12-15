@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const admin_service_1 = require("./admin.service");
 const is_authenticated_guard_1 = require("../auth/guards/is-authenticated.guard");
 const is_admin_guard_1 = require("../auth/guards/is-admin.guard");
+const swagger_1 = require("@nestjs/swagger");
 let AdminController = class AdminController {
     constructor(adminService) {
         this.adminService = adminService;
@@ -37,6 +38,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "getDashboardData", null);
 exports.AdminController = AdminController = __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Controller)('admin'),
     __metadata("design:paramtypes", [admin_service_1.AdminService])
 ], AdminController);

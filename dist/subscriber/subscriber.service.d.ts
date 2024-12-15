@@ -1,7 +1,7 @@
 import { Subscriber } from './subscriber.entity';
 import { Repository } from 'typeorm';
 import { CreateSubscriberDto, UpdateSubscriberDto } from './create-subscriber.dto';
-import { HashService } from 'src/hash/hash.service';
+import { HashService } from '@/hash/hash.service';
 export declare class SubscriberService {
     private repo;
     private hashService;

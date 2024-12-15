@@ -20,6 +20,7 @@ const user_decorator_1 = require("../decorators/user.decorator");
 const is_authenticated_guard_1 = require("../../auth/guards/is-authenticated.guard");
 const is_admin_guard_1 = require("../../auth/guards/is-admin.guard");
 const user_role_service_1 = require("../services/user-role.service");
+const swagger_1 = require("@nestjs/swagger");
 let UserRoleController = class UserRoleController {
     constructor(userService, userRoleService) {
         this.userService = userService;
@@ -56,24 +57,27 @@ let UserRoleController = class UserRoleController {
 };
 exports.UserRoleController = UserRoleController;
 __decorate([
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Get)(),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     __param(0, (0, user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], UserRoleController.prototype, "getAll", null);
 __decorate([
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Get)('slug/:slug'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     __param(0, (0, common_1.Param)('slug')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UserRoleController.prototype, "getOneBySlug", null);
 __decorate([
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),

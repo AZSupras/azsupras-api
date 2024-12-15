@@ -14,6 +14,8 @@ const ban_module_1 = require("./ban/ban/ban.module");
 const admin_controller_1 = require("./admin.controller");
 const user_admin_controller_1 = require("./user/user.admin.controller");
 const user_admin_service_1 = require("./user/user.admin.service");
+const user_role_admin_controller_1 = require("./user/user-role.admin.controller");
+const user_role_admin_service_1 = require("./user/user-role.admin.service");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -23,12 +25,13 @@ exports.AdminModule = AdminModule = __decorate([
             user_module_1.UserModule,
             ban_module_1.BanModule,
         ],
-        providers: [admin_service_1.AdminService, user_admin_service_1.AdminUserService,],
+        providers: [admin_service_1.AdminService, user_admin_service_1.AdminUserService, user_role_admin_service_1.AdminUserRoleService,],
         controllers: [
             admin_controller_1.AdminController,
             user_admin_controller_1.AdminUserController,
+            user_role_admin_controller_1.UserRoleAdminController,
         ],
-        exports: [admin_service_1.AdminService, user_admin_service_1.AdminUserService,],
+        exports: [admin_service_1.AdminService, user_admin_service_1.AdminUserService, user_role_admin_service_1.AdminUserRoleService,],
     })
 ], AdminModule);
 //# sourceMappingURL=admin.module.js.map

@@ -130,7 +130,8 @@ let AuthService = class AuthService {
         return user;
     }
     async findUserByEmailVerificationToken(token) {
-        return await this.userService.findUserByEmailVerificationToken(token);
+        const results = await this.userService.findUserByEmailVerificationToken(token);
+        return results;
     }
     async findUserByUserId(userId) {
         try {
@@ -141,9 +142,9 @@ let AuthService = class AuthService {
             throw new Error(err.message);
         }
     }
-    async confirmEmail(token) {
+    async confirmEmail(userId, token) {
         try {
-            let user = await this.userService.confirmEmail(token);
+            let user = await this.userService.confirmEmail(userId, token);
             return user;
         }
         catch (err) {

@@ -3,7 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { CreateEmailDto } from './create-email.dto';
 import { Repository } from 'typeorm';
 import { Email } from './email.entity';
-import { UserService } from 'src/user/services/user.service';
+import { UserService } from '@/user/services/user.service';
 export interface EmailVerification {
     userId: string;
 }

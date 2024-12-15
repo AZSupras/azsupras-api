@@ -4,8 +4,8 @@ import { Job } from 'bull';
 import { CreateEmailDto } from './create-email.dto';
 import { EmailService, ISentMessageInfo } from './email.service';
 import { Email } from './email.entity';
-import { Subscriber } from 'src/subscriber/subscriber.entity';
-import { SubscriberService } from 'src/subscriber/subscriber.service';
+import { Subscriber } from '@/subscriber/subscriber.entity';
+import { SubscriberService } from '@/subscriber/subscriber.service';
 
 @Processor('email')
 export class EmailProcessor {

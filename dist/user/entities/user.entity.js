@@ -10,12 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
-const invite_entity_1 = require("../../invite/invite.entity");
 const subscriber_entity_1 = require("../../subscriber/subscriber.entity");
 const user_role_entity_1 = require("./user-role.entity");
 const typeorm_1 = require("typeorm");
 const bcryptjs_1 = require("bcryptjs");
 const ban_entity_1 = require("../../admin/ban/ban/ban.entity");
+const message_entity_1 = require("../../message/entities/message.entity");
 let User = class User {
     constructor(data = {}) {
         Object.assign(this, data);
@@ -31,7 +31,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ unique: true, nullable: false, }),
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
@@ -127,9 +127,9 @@ __decorate([
     __metadata("design:type", subscriber_entity_1.Subscriber)
 ], User.prototype, "subscriber", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => invite_entity_1.Invite, (invite) => invite.user),
-    __metadata("design:type", invite_entity_1.Invite)
-], User.prototype, "invite", void 0);
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "inviteId", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => user_role_entity_1.UserRole, (role) => role.users),
     (0, typeorm_1.JoinTable)(),
@@ -139,6 +139,14 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => ban_entity_1.Ban, (ban) => ban.user),
     __metadata("design:type", Array)
 ], User.prototype, "bans", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.sender),
+    __metadata("design:type", Array)
+], User.prototype, "sentMessages", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.recipient),
+    __metadata("design:type", Array)
+], User.prototype, "receivedMessages", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

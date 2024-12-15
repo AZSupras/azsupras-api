@@ -216,6 +216,7 @@ let UserService = UserService_1 = class UserService {
             select: {
                 id: true,
                 username: true,
+                emailVerified: true,
                 emailVerificationToken: true,
                 firstName: true,
                 lastName: true,
@@ -225,8 +226,21 @@ let UserService = UserService_1 = class UserService {
         const results = await this.repo.findOne(query);
         return results;
     }
-    async confirmEmail(token) {
-        let user = await this.findUserByEmailVerificationToken(token);
+    async confirmEmail(userId, token) {
+        let user = await this.findOne({
+            where: {
+                id: userId,
+            },
+            select: {
+                id: true,
+                username: true,
+                emailVerified: true,
+                emailVerificationToken: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+            }
+        });
         if (!user) {
             throw new common_1.NotFoundException(`User not found.`);
         }

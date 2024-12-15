@@ -21,7 +21,6 @@ import { SubscriberModule } from './subscriber/subscriber.module';
 import { Subscriber } from './subscriber/subscriber.entity';
 import { SubscriberService } from './subscriber/subscriber.service';
 import { HashService } from './hash/hash.service';
-import { InviteModule } from './invite/invite.module';
 import { SeederModule } from './seeder/seeder.module';
 import { HashModule } from './hash/hash.module';
 import { SeederService } from './seeder/seeder.service';
@@ -38,6 +37,7 @@ import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
 import { HelpModule } from './help/help.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MessageModule } from './message/message.module';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -90,11 +90,11 @@ const schedulerConfig: BullModuleOptions = {
     }),
     ScheduleModule.forRoot(),
     BullModule.forRoot(schedulerConfig),
+    MessageModule,
     UserModule,
     EmailModule,
     NewsletterModule,
     SubscriberModule,
-    InviteModule,
     SeederModule,
     HashModule,
     AppConfigModule,

@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import crypto, { randomBytes } from 'crypto';
-import { HashService } from 'src/hash/hash.service';
-import { LoggerService } from 'src/logger/logger.service';
-import { UserRoleService } from 'src/user/services/user-role.service';
+import { HashService } from '@/hash/hash.service';
+import { LoggerService } from '@/logger/logger.service';
+import { UserRoleService } from '@/user/services/user-role.service';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { PublicUserDto } from '../dto/public-user.dto';
@@ -12,7 +12,7 @@ import { User } from '../entities/user.entity';
 import { BanUserDto } from '../../admin/dto/ban-user.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { CreateEmailDto } from 'src/email/create-email.dto';
+import { CreateEmailDto } from '@/email/create-email.dto';
 
 const adjectives = [
   "Adventurous", "Brave", "Calm", "Delightful", "Eager", "Faithful", "Gentle",
@@ -258,6 +258,7 @@ export class UserService {
       select: {
         id: true,
         username: true,
+        emailVerified: true,
         emailVerificationToken: true,
         firstName: true,
         lastName: true,
@@ -270,8 +271,22 @@ export class UserService {
     return results;
   }
 
-  public async confirmEmail(token: string): Promise<User> {
-    let user: User = await this.findUserByEmailVerificationToken(token);
+  public async confirmEmail(userId: string, token: string): Promise<User> {
+    let user: User = await this.findOne({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        username: true,
+        emailVerified: true,
+        emailVerificationToken: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+      }
+    });
+    
     if (!user) {
       throw new NotFoundException(`User not found.`);
     }

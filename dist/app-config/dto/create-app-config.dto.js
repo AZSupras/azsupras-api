@@ -51,4 +51,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], CreateAppConfigDto.prototype, "passwordSpecialCharRequired", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsDateString)(),
+    __metadata("design:type", Date)
+], CreateAppConfigDto.prototype, "registrationOpenDate", void 0);
 //# sourceMappingURL=create-app-config.dto.js.map
