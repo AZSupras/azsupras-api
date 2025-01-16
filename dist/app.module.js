@@ -47,6 +47,9 @@ const admin_module_1 = require("./admin/admin.module");
 const help_module_1 = require("./help/help.module");
 const schedule_1 = require("@nestjs/schedule");
 const message_module_1 = require("./message/message.module");
+const member_module_1 = require("./member/member.module");
+const s3_service_1 = require("./s3/s3.service");
+const s3_module_1 = require("./s3/s3.module");
 const configModuleOptions = {
     isGlobal: true,
     envFilePath: ['.env', '.env.local'],
@@ -122,6 +125,8 @@ exports.AppModule = AppModule = AppModule_1 = __decorate([
             health_module_1.HealthModule,
             admin_module_1.AdminModule,
             help_module_1.HelpModule,
+            member_module_1.MemberModule,
+            s3_module_1.S3Module,
         ],
         providers: [
             app_service_1.AppService,
@@ -131,6 +136,7 @@ exports.AppModule = AppModule = AppModule_1 = __decorate([
             user_service_1.UserService,
             subscriber_service_1.SubscriberService,
             hash_service_1.HashService,
+            s3_service_1.S3Service,
         ],
         controllers: [health_controller_1.HealthController, app_controller_1.AppController, admin_controller_1.AdminController],
     }),

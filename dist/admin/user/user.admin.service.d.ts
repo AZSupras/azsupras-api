@@ -9,6 +9,9 @@ export declare class AdminUserService {
     findOne(query: FindOneOptions<User>): Promise<User>;
     findAll(): Promise<User[]>;
     findOneByUsername(username: string): Promise<User>;
+    findOneById(id: string, options?: FindOneOptions<User>): Promise<User>;
+    findOneByEmail(email: string, options?: FindOneOptions<User>): Promise<User>;
+    update(username: string, updateUserDto: Partial<User>, options?: FindOneOptions<User>): Promise<User>;
     deleteUser(username: string): Promise<User>;
     banUser({ username, reason }: BanUserDto): Promise<User>;
     unbanUser(username: string): Promise<User>;

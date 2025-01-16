@@ -60,9 +60,8 @@ import { AppConfig } from '@/app-config/entities/app-config.entity';
     }
   
     @Post('login')
-    @ApiBearerAuth()
-    @UseGuards(IsGuestGuard, LocalAuthGuard)
     @HttpCode(HttpStatus.OK)
+    @UseGuards(LocalAuthGuard)
     async login(@AuthUser() user: User): Promise<IResponseWithRelation<User>> {
       const response: IResponseWithRelation<User> = {
         statusCode: 200,

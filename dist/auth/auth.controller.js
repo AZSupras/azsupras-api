@@ -151,9 +151,8 @@ __decorate([
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('login'),
-    (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.UseGuards)(is_guest_guard_1.IsGuestGuard, local_auth_guard_1.LocalAuthGuard),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
     __param(0, (0, user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),

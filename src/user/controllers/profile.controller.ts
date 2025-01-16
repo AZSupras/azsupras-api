@@ -29,9 +29,22 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class ProfileController {
   constructor(private readonly userService: UserService) {}
 
+  @Get()
+  @UseGuards(IsAuthenticatedGuard)
+  @ApiBearerAuth()
+  async getMe(@AuthUser() user: User, @Req() req: Request): Promise<IResponseWithRelation<User>> {
+    const data: User = user;
 
+    const results: IResponseWithRelation<User> = {
+      statusCode: 200,
+      message: 'Success',
+      data,
+    };
 
-  @Put('')
+    return results;
+  }
+
+  @Put()
   @ApiBearerAuth()
   @UseGuards(IsAuthenticatedGuard)
   async updateMe(@AuthUser() user: User, @Body() updatesUser: UserUpdate): Promise<IResponseWithRelation<User>> {
@@ -136,40 +149,6 @@ export class ProfileController {
     }
 
     const results: IResponseWithRelation<PublicUserDto> = {
-      statusCode: 200,
-      message: 'Success',
-      data,
-    };
-
-    return results;
-  }
-  
-  @Get()
-  @UseGuards(IsAuthenticatedGuard)
-  @ApiBearerAuth()
-  async getMe(@AuthUser() user: User, @Req() req: Request): Promise<IResponseWithRelation<User>> {
-    const data: User = user;3
-
-    const results: IResponseWithRelation<User> = {
-      statusCode: 200,
-      message: 'Success',
-      data,
-    };
-
-    return results;
-  }
-
-  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
-  @Put(':username')
-  @ApiBearerAuth()
-  async updateUser(
-    @Param('username') username: string,
-    @Body() updatesUser: UserUpdate,
-  ): Promise<IResponseWithRelation<User>> {
-    const data: User = await this.userService.update(username, updatesUser);
-
-
-    const results: IResponseWithRelation<User> = {
       statusCode: 200,
       message: 'Success',
       data,

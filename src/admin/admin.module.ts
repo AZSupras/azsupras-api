@@ -7,13 +7,15 @@ import { AdminUserController } from './user/user.admin.controller';
 import { AdminUserService } from './user/user.admin.service';
 import { UserRoleAdminController } from './user/user-role.admin.controller';
 import { AdminUserRoleService } from './user/user-role.admin.service';
+import { AdminMemberModule } from './member/member.admin.module';
 
 @Module({
   imports: [
     UserModule,
     BanModule,
+    AdminMemberModule,
   ],
-  providers: [AdminService, AdminUserService, AdminUserRoleService,],
+  providers: [AdminService, AdminUserService, AdminUserRoleService],
   controllers: [
     AdminController,
     AdminUserController,

@@ -18,13 +18,21 @@ const user_update_dto_1 = require("../dto/user-update.dto");
 const user_entity_1 = require("../entities/user.entity");
 const user_service_1 = require("../services/user.service");
 const public_guard_1 = require("../../auth/guards/public.guard");
-const is_admin_guard_1 = require("../../auth/guards/is-admin.guard");
 const is_authenticated_guard_1 = require("../../auth/guards/is-authenticated.guard");
 const user_decorator_1 = require("../decorators/user.decorator");
 const swagger_1 = require("@nestjs/swagger");
 let ProfileController = class ProfileController {
     constructor(userService) {
         this.userService = userService;
+    }
+    async getMe(user, req) {
+        const data = user;
+        const results = {
+            statusCode: 200,
+            message: 'Success',
+            data,
+        };
+        return results;
     }
     async updateMe(user, updatesUser) {
         const data = await this.userService.update(user.username, updatesUser);
@@ -112,29 +120,20 @@ let ProfileController = class ProfileController {
         };
         return results;
     }
-    async getMe(user, req) {
-        const data = user;
-        3;
-        const results = {
-            statusCode: 200,
-            message: 'Success',
-            data,
-        };
-        return results;
-    }
-    async updateUser(username, updatesUser) {
-        const data = await this.userService.update(username, updatesUser);
-        const results = {
-            statusCode: 200,
-            message: 'Success',
-            data,
-        };
-        return results;
-    }
 };
 exports.ProfileController = ProfileController;
 __decorate([
-    (0, common_1.Put)(''),
+    (0, common_1.Get)(),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, user_decorator_1.AuthUser)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, Object]),
+    __metadata("design:returntype", Promise)
+], ProfileController.prototype, "getMe", null);
+__decorate([
+    (0, common_1.Put)(),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
     __param(0, (0, user_decorator_1.AuthUser)()),
@@ -164,26 +163,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProfileController.prototype, "get", null);
-__decorate([
-    (0, common_1.Get)(),
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
-    (0, swagger_1.ApiBearerAuth)(),
-    __param(0, (0, user_decorator_1.AuthUser)()),
-    __param(1, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_entity_1.User, Object]),
-    __metadata("design:returntype", Promise)
-], ProfileController.prototype, "getMe", null);
-__decorate([
-    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard, is_admin_guard_1.IsAdminGuard),
-    (0, common_1.Put)(':username'),
-    (0, swagger_1.ApiBearerAuth)(),
-    __param(0, (0, common_1.Param)('username')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, user_update_dto_1.UserUpdate]),
-    __metadata("design:returntype", Promise)
-], ProfileController.prototype, "updateUser", null);
 exports.ProfileController = ProfileController = __decorate([
     (0, common_1.Controller)(['u', 'user', 'profile', 'p']),
     (0, common_1.UseInterceptors)(common_1.ClassSerializerInterceptor),

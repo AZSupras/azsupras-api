@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { IsAuthenticatedGuard } from '@/auth/guards/is-authenticated.guard';
 import { IsAdminGuard } from '@/auth/guards/is-admin.guard';
 import { IResponseWithRelation } from '@/interfaces/IResponse';
@@ -6,6 +6,7 @@ import { AdminUserService } from './user.admin.service';
 import { User } from '@/user/entities/user.entity';
 import { BanUserDto, UnbanUserDto } from '@/admin/dto/ban-user.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UserUpdate } from '@/user/dto/user-update.dto';
 
 @ApiBearerAuth()
 @Controller(['admin/user', 'admin/users'])
@@ -62,7 +63,62 @@ export class AdminUserController {
   @Get(':username')
   async Admin_getOneUserByUsername(@Param('username') username: string) {
     const data: User =
-      await this.userService.findOneByUsername(username);
+      await this.userService.findOne({
+        where: {
+          username
+        },
+        select: {
+          id: true,
+          username: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          birthday: true,
+          isBanned: true,
+          bannedAt: true,
+          bannedReason: true,
+          isPublic: true,
+          isOnline: true,
+          emailVerified: true,
+          emailVerificationToken: true,
+          emailVerifiedAt: true,
+          passwordResetToken: true,
+          passwordResetExpires: true,
+          passwordResetRequestedAt: true,
+          lastLogin: true,
+          createdAt: true,
+          updatedAt: true,
+          inviteId: true,
+          roles: true,
+          bans: true,
+          sentMessages: true,
+          receivedMessages: true,
+        },
+        relations: {
+          roles: true,
+          bans: true,
+          sentMessages: true,
+          receivedMessages: true,
+        }
+      });
+
+    const results: IResponseWithRelation<User> = {
+      statusCode: 200,
+      message: 'Success',
+      data,
+    };
+
+    return results;
+  }
+
+  @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
+  @Put(':username')
+  @ApiBearerAuth()
+  async Admin_updateUser(
+    @Param('username') username: string,
+    @Body() updatesUser: UserUpdate,
+  ): Promise<IResponseWithRelation<User>> {
+    const data: User = await this.userService.update(username, updatesUser);
 
     const results: IResponseWithRelation<User> = {
       statusCode: 200,

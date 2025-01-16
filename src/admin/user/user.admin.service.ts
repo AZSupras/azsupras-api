@@ -42,6 +42,53 @@ export class AdminUserService {
         return results;
     }
 
+    public async findOneById(
+      id: string,
+      options?: FindOneOptions<User>,
+    ): Promise<User> {
+      const query: FindOneOptions<User> = {
+        where: { id },
+        ...options,
+      };
+  
+      const results = await this.userRepo.findOne(query);
+  
+      return results;
+    }
+  
+    public async findOneByEmail(
+      email: string,
+      options?: FindOneOptions<User>,
+    ): Promise<User> {
+      const query: FindOneOptions<User> = {
+        where: {
+          email,
+        },
+        ...options,
+      };
+  
+      const results = await this.userRepo.findOne(query);
+  
+      return results;
+    }
+
+    public async update(username: string, updateUserDto: Partial<User>, options?: FindOneOptions<User>): Promise<User> {
+      const user: User = await this.findOneByUsername(username);
+  
+      if (!user) {
+        throw new NotFoundException(`User with username '${username}' not found.`);
+      }
+  
+      let updatedUser: User = await this.userRepo.save({
+        ...user,
+        ...updateUserDto,
+      });
+  
+      updatedUser = await this.findOneById(updatedUser.id, options);
+  
+      return updatedUser;
+    }
+
     public async deleteUser(username: string): Promise<User> {
         const user: User = await this.findOneByUsername(username);
 

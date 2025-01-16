@@ -44,6 +44,36 @@ let AdminUserService = AdminUserService_1 = class AdminUserService {
         });
         return results;
     }
+    async findOneById(id, options) {
+        const query = {
+            where: { id },
+            ...options,
+        };
+        const results = await this.userRepo.findOne(query);
+        return results;
+    }
+    async findOneByEmail(email, options) {
+        const query = {
+            where: {
+                email,
+            },
+            ...options,
+        };
+        const results = await this.userRepo.findOne(query);
+        return results;
+    }
+    async update(username, updateUserDto, options) {
+        const user = await this.findOneByUsername(username);
+        if (!user) {
+            throw new common_1.NotFoundException(`User with username '${username}' not found.`);
+        }
+        let updatedUser = await this.userRepo.save({
+            ...user,
+            ...updateUserDto,
+        });
+        updatedUser = await this.findOneById(updatedUser.id, options);
+        return updatedUser;
+    }
     async deleteUser(username) {
         const user = await this.findOneByUsername(username);
         return user;

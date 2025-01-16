@@ -16,6 +16,7 @@ const user_admin_controller_1 = require("./user/user.admin.controller");
 const user_admin_service_1 = require("./user/user.admin.service");
 const user_role_admin_controller_1 = require("./user/user-role.admin.controller");
 const user_role_admin_service_1 = require("./user/user-role.admin.service");
+const member_admin_module_1 = require("./member/member.admin.module");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -24,8 +25,9 @@ exports.AdminModule = AdminModule = __decorate([
         imports: [
             user_module_1.UserModule,
             ban_module_1.BanModule,
+            member_admin_module_1.AdminMemberModule,
         ],
-        providers: [admin_service_1.AdminService, user_admin_service_1.AdminUserService, user_role_admin_service_1.AdminUserRoleService,],
+        providers: [admin_service_1.AdminService, user_admin_service_1.AdminUserService, user_role_admin_service_1.AdminUserRoleService],
         controllers: [
             admin_controller_1.AdminController,
             user_admin_controller_1.AdminUserController,

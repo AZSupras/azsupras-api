@@ -1,0 +1,36 @@
+import { CreateMemberDto } from '../dto/create-member.dto';
+import { UpdateMemberDto } from '../dto/update-member.dto';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { Member } from '../entities/member.entity';
+import { MemberPhoto } from '../entities/member-photo.entity';
+import { CreateMemberPhotoDto } from '../dto/create-member-photo.dto';
+import { MemberVehicle } from '../entities/member-vehicle.entity';
+import { CreateMemberVehicleDto } from '../dto/create-member-vehicle.dto';
+import { UpdateMemberVehicleDto } from '../dto/update-member-vehicle.dto';
+export declare class MemberService {
+    private repo;
+    private photoRepo;
+    private vehicleRepo;
+    private readonly logger;
+    constructor(repo: Repository<Member>, photoRepo: Repository<MemberPhoto>, vehicleRepo: Repository<MemberVehicle>);
+    find(query: FindManyOptions<Member>): Promise<Member[]>;
+    findAll(): Promise<Member[]>;
+    findOne(query: FindOneOptions<Member>): Promise<Member>;
+    findOneById(id: string): Promise<Member>;
+    create(data: CreateMemberDto): Promise<Member>;
+    update(id: string, data: UpdateMemberDto): Promise<Member>;
+    remove(id: string): Promise<Member>;
+    createPhoto(data: CreateMemberPhotoDto): Promise<MemberPhoto>;
+    getMemberPhoto(memberId: string): Promise<MemberPhoto>;
+    uploadPhoto(memberId: string, file: Express.Multer.File): Promise<MemberPhoto>;
+    removePhoto(id: string): Promise<MemberPhoto>;
+    removeMemberPhoto(memberId: string): Promise<MemberPhoto>;
+    findAllMemberPhoto(memberId: string): Promise<MemberPhoto[]>;
+    findOneMemberPhotoById(id: string): Promise<MemberPhoto>;
+    getMemberVehicles(memberId: string): Promise<MemberVehicle[]>;
+    getAllVehicles(): Promise<MemberVehicle[]>;
+    getVehicleById(id: string): Promise<MemberVehicle>;
+    createVehicle(data: CreateMemberVehicleDto): Promise<MemberVehicle | MemberVehicle[]>;
+    updateVehicle(id: string, data: UpdateMemberVehicleDto): Promise<MemberVehicle>;
+    removeVehicle(id: string): Promise<MemberVehicle>;
+}

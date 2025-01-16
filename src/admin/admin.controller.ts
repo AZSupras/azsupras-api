@@ -11,8 +11,6 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class AdminController {
     constructor(private readonly adminService: AdminService) {}
 
-    // Add your admin controller methods here
-
     @Get('dashboard')
     @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     async getDashboardData() {

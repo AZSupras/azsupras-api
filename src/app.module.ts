@@ -38,6 +38,9 @@ import { AdminModule } from './admin/admin.module';
 import { HelpModule } from './help/help.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MessageModule } from './message/message.module';
+import { MemberModule } from './member/member.module';
+import { S3Service } from './s3/s3.service';
+import { S3Module } from './s3/s3.module';
 
 const configModuleOptions: ConfigModuleOptions = {
   isGlobal: true,
@@ -102,6 +105,8 @@ const schedulerConfig: BullModuleOptions = {
     HealthModule,
     AdminModule,
     HelpModule,
+    MemberModule,
+    S3Module,
   ],
   providers: [
     AppService,
@@ -111,6 +116,7 @@ const schedulerConfig: BullModuleOptions = {
     UserService,
     SubscriberService,
     HashService,
+    S3Service,
   ],
   controllers: [HealthController, AppController, AdminController],
 })

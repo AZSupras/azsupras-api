@@ -6,10 +6,9 @@ import { PublicUserDto } from '../dto/public-user.dto';
 export declare class ProfileController {
     private readonly userService;
     constructor(userService: UserService);
+    getMe(user: User, req: Request): Promise<IResponseWithRelation<User>>;
     updateMe(user: User, updatesUser: UserUpdate): Promise<IResponseWithRelation<User>>;
     generateRandomUsername(): Promise<IResponseWithRelation<string>>;
     checkUsernameAvailability(username: string): Promise<IResponseWithRelation<boolean>>;
     get(username: string): Promise<IResponseWithRelation<PublicUserDto>>;
-    getMe(user: User, req: Request): Promise<IResponseWithRelation<User>>;
-    updateUser(username: string, updatesUser: UserUpdate): Promise<IResponseWithRelation<User>>;
 }
