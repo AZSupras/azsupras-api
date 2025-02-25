@@ -57,6 +57,19 @@ let MemberService = MemberService_1 = class MemberService {
         const results = await this.repo.save({ ...member, ...data });
         return results;
     }
+    async upsert(data) {
+        let results;
+        if (data.id) {
+            results = await this.findOneById(data.id);
+        }
+        if (!results) {
+            results = await this.create(data);
+        }
+        else {
+            results = await this.update(data.id, data);
+        }
+        return results;
+    }
     async remove(id) {
         const member = await this.repo.findOne({ where: { id } });
         const results = await this.repo.remove(member);

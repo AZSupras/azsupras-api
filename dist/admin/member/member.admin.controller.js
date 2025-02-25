@@ -21,9 +21,11 @@ const is_authenticated_guard_1 = require("../../auth/guards/is-authenticated.gua
 const platform_express_1 = require("@nestjs/platform-express");
 const s3_service_1 = require("../../s3/s3.service");
 const member_admin_service_1 = require("./member.admin.service");
+const user_admin_service_1 = require("../user/user.admin.service");
 let AdminMemberController = class AdminMemberController {
-    constructor(memberService, s3Service) {
+    constructor(memberService, userService, s3Service) {
         this.memberService = memberService;
+        this.userService = userService;
         this.s3Service = s3Service;
     }
     async findAll() {
@@ -37,6 +39,13 @@ let AdminMemberController = class AdminMemberController {
     }
     async create(createMemberDto) {
         try {
+            if (createMemberDto.userId) {
+                const existingMember = await this.memberService.findOne({ where: { userId: createMemberDto.userId } });
+                if (existingMember) {
+                    throw new common_1.BadRequestException('Member already exists for this user');
+                }
+                const existingUser = await this.userService.findOneById(createMemberDto.userId);
+            }
             const data = await this.memberService.create(createMemberDto);
             const response = {
                 data: data,
@@ -190,6 +199,6 @@ __decorate([
 ], AdminMemberController.prototype, "findOne", null);
 exports.AdminMemberController = AdminMemberController = __decorate([
     (0, common_1.Controller)(['admin/member', 'admin/members']),
-    __metadata("design:paramtypes", [member_admin_service_1.AdminMemberService, s3_service_1.S3Service])
+    __metadata("design:paramtypes", [member_admin_service_1.AdminMemberService, user_admin_service_1.AdminUserService, s3_service_1.S3Service])
 ], AdminMemberController);
 //# sourceMappingURL=member.admin.controller.js.map

@@ -9,9 +9,12 @@ import * as connectPgSimple from 'connect-pg-simple';
 
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-
+import { LoggerService } from './logger/logger.service';
+ 
+const logger = new LoggerService('Session Setup');
 export function setup(app: INestApplication): INestApplication {
   const config = app.get(ConfigService);
+
   const appSecret: string = config.get<string>('APP_SECRET');
   const nodeEnv: string = config.get<string>('NODE_ENV');
   const redisHost: string = config.get<string>('REDIS_HOST') || 'localhost';
@@ -34,9 +37,11 @@ export function setup(app: INestApplication): INestApplication {
   })
   redisSessionClient.connect()
     .then(() => {
-      console.log('Redis session client connected');
+      logger.log('Redis session client connected');
     })
-    .catch(console.error);
+    .catch((error) => {
+      logger.error(error);
+    });
 
   const sessionStore = (nodeEnv === 'production')
     ? new (connectPgSimple(session))({

@@ -14,8 +14,17 @@ const subscriber_entity_1 = require("../../subscriber/subscriber.entity");
 const user_role_entity_1 = require("./user-role.entity");
 const typeorm_1 = require("typeorm");
 const bcryptjs_1 = require("bcryptjs");
-const ban_entity_1 = require("../../admin/ban/ban/ban.entity");
 const message_entity_1 = require("../../message/entities/message.entity");
+const member_entity_1 = require("../../member/entities/member.entity");
+const user_ban_entity_1 = require("./user-ban.entity");
+const defaultUserPrivacySetting = {
+    firstNameVisible: true,
+    lastNameVisible: false,
+    middleNameVisible: false,
+    suffixVisible: false,
+    emailVisible: false,
+    isPublic: true,
+};
 let User = class User {
     constructor(data = {}) {
         Object.assign(this, data);
@@ -45,15 +54,19 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], User.prototype, "middleName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], User.prototype, "lastName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "suffix", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true, nullable: true, select: false }),
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
-__decorate([
-    (0, typeorm_1.Column)('date', { nullable: true }),
-    __metadata("design:type", Date)
-], User.prototype, "birthday", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
@@ -67,10 +80,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "bannedReason", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isPublic", void 0);
-__decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isVerified", void 0);
@@ -78,6 +87,18 @@ __decorate([
     (0, typeorm_1.Column)({ default: false }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isOnline", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "website", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], User.prototype, "location", void 0);
+__decorate([
+    (0, typeorm_1.Column)('jsonb', { default: defaultUserPrivacySetting }),
+    __metadata("design:type", Object)
+], User.prototype, "privacySettings", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: false, select: false }),
     __metadata("design:type", Boolean)
@@ -123,20 +144,20 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => subscriber_entity_1.Subscriber),
-    __metadata("design:type", subscriber_entity_1.Subscriber)
-], User.prototype, "subscriber", void 0);
-__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "inviteId", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => subscriber_entity_1.Subscriber),
+    __metadata("design:type", subscriber_entity_1.Subscriber)
+], User.prototype, "subscriber", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => user_role_entity_1.UserRole, (role) => role.users),
     (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Array)
 ], User.prototype, "roles", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => ban_entity_1.Ban, (ban) => ban.user),
+    (0, typeorm_1.OneToMany)(() => user_ban_entity_1.UserBan, (ban) => ban.user),
     __metadata("design:type", Array)
 ], User.prototype, "bans", void 0);
 __decorate([
@@ -147,6 +168,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => message_entity_1.Message, (message) => message.recipient),
     __metadata("design:type", Array)
 ], User.prototype, "receivedMessages", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => member_entity_1.Member, (member) => member.user),
+    __metadata("design:type", member_entity_1.Member)
+], User.prototype, "member", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)(),
     __metadata("design:paramtypes", [Object])

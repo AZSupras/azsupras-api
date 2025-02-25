@@ -1,6 +1,15 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
 import { MemberPhoto } from "./member-photo.entity"
 import { MemberVehicle } from "./member-vehicle.entity"
+import { User } from "@/user/entities/user.entity"
+
+const defaultUserPrivacySetting = {
+    firstNameVisible: true,
+    lastNameVisible: false,
+    middleNameVisible: false,
+    suffixVisible: false,
+    emailVisible: false,
+};
 
 @Entity()
 export class Member {
@@ -11,7 +20,13 @@ export class Member {
     firstName: string
 
     @Column({ nullable: true })
+    middleName?: string
+
+    @Column({ nullable: true })
     lastName?: string
+
+    @Column({ nullable: true })
+    suffix?: string
 
     @Column({ nullable: true })
     email?: string
@@ -43,7 +58,10 @@ export class Member {
     @Column({ nullable: true })
     birthDate?: Date
 
-    @Column('jsonb', { default: { firstNameVisible: true, lastNameVisible: false, emailVisible: false, phoneVisible: false, address1Visible: false, address2Visible: false, cityVisible: false, stateVisible: false, zipVisible: false, countryVisible: false, genderVisible: false, birthDateVisible: false } })
+    @Column({ nullable: true })
+    userId?: string
+
+    @Column('jsonb', { default: defaultUserPrivacySetting })
     privacySettings: object[];
 
     @Column({
@@ -67,4 +85,9 @@ export class Member {
     // Member can own one vehicle
     @OneToMany(() => MemberVehicle, (vehicle) => vehicle.member, { eager: true })
     vehicles: MemberVehicle[];
+
+    // Member can belong to one user
+    @OneToOne(() => User, (user) => user.member)
+    @JoinColumn()
+    user?: User;
 }

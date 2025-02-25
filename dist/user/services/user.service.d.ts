@@ -25,7 +25,7 @@ export declare class UserService {
     forgotPassword(email: string): Promise<User>;
     findEmailVerificationTokenUsername(username: string): Promise<User>;
     findUserByEmailVerificationToken(emailVerificationToken: string): Promise<User>;
-    confirmEmail(userId: string, token: string): Promise<User>;
+    confirmEmail(username: string, token: string): Promise<User>;
     findOneByIdentity(identity: string, options?: FindOneOptions<User>): Promise<User>;
     findOneByIdentity_withPassword(identity: string, options?: FindOneOptions<User>): Promise<User>;
     checkUsernameAvailability(username: string): Promise<boolean>;

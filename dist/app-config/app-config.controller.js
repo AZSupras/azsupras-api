@@ -20,12 +20,15 @@ const create_app_config_dto_1 = require("./dto/create-app-config.dto");
 const is_authenticated_guard_1 = require("../auth/guards/is-authenticated.guard");
 const is_admin_guard_1 = require("../auth/guards/is-admin.guard");
 const swagger_1 = require("@nestjs/swagger");
+const user_decorator_1 = require("../user/decorators/user.decorator");
+const user_entity_1 = require("../user/entities/user.entity");
+const app_config_with_user_session_dto_1 = require("./dto/app-config-with-user-session.dto");
 let AppConfigController = AppConfigController_1 = class AppConfigController {
     constructor(appConfigService) {
         this.appConfigService = appConfigService;
         this.logger = new common_1.Logger(AppConfigController_1.name);
     }
-    async getLatestConfig() {
+    async getLatestConfig(user) {
         const data = await this.appConfigService.getLatest();
         if (!data) {
             this.logger.warn('No app config found');
@@ -34,7 +37,7 @@ let AppConfigController = AppConfigController_1 = class AppConfigController {
         const response = {
             statusCode: 200,
             message: 'Success',
-            data,
+            data: new app_config_with_user_session_dto_1.AppConfigWithUserSessionDto(data, user),
         };
         return response;
     }
@@ -79,8 +82,9 @@ let AppConfigController = AppConfigController_1 = class AppConfigController {
 exports.AppConfigController = AppConfigController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Promise)
 ], AppConfigController.prototype, "getLatestConfig", null);
 __decorate([

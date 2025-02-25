@@ -3,16 +3,24 @@ import { IsUserAlreadyExist } from '../validators/is-user-already-exist.validato
 
 export class UserUpdate {
   @IsOptional()
-  @IsEmail()
-  readonly email?: string | null;
-
-  @IsOptional()
   @IsString()
-  readonly firstName?: string | null;
+  firstName?: string;
   
   @IsOptional()
   @IsString()
-  readonly lastName?: string | null;
+  middleName?: string;
+  
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+  
+  @IsOptional()
+  @IsString()
+  suffix?: string;
+  
+  @IsOptional()
+  @IsEmail()
+  readonly email?: string | null;
   
   @IsOptional()
   @IsBoolean()

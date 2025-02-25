@@ -4,9 +4,9 @@ const core_1 = require("@nestjs/core");
 const config_1 = require("@nestjs/config");
 const logger_service_1 = require("./logger/logger.service");
 const app_module_1 = require("./app.module");
-const SeederData_1 = require("./seeder/SeederData");
 const setup_1 = require("./setup");
 const swagger_1 = require("@nestjs/swagger");
+const data_1 = require("./seeder/data");
 const logger = new logger_service_1.LoggerService('Main');
 async function bootstrap() {
     const applicationOptions = {
@@ -43,7 +43,7 @@ async function bootstrap() {
 }
 bootstrap()
     .then(({ app, apiBaseUrl }) => {
-    const { username, password, ...defaultAdminUser } = SeederData_1.SeedData_Users[0];
+    const { username, password, ...defaultAdminUser } = data_1.SeedData.users[0];
     setTimeout(() => {
         logger.printStartupBanner(apiBaseUrl, username, password);
     }, 500);

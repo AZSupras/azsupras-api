@@ -47,7 +47,7 @@ import { AppConfig } from '@/app-config/entities/app-config.entity';
         throw new BadRequestException('Registration is not currently enabled.');
       }
       
-      // if registration is enabled, we can register the user without an invite code
+      // if registration is enabled, we can register the user
       const data: User = await this.authService.register(signUp);
 
       const response: IResponseWithRelation<User> = {
@@ -72,7 +72,7 @@ import { AppConfig } from '@/app-config/entities/app-config.entity';
       return response;
     }
 
-    @Get('logout')
+    @Post('logout')
     @ApiBearerAuth()
     @UseGuards(IsAuthenticatedGuard)
     async logout(@Req() request: Request): Promise<IResponse> {
@@ -86,10 +86,10 @@ import { AppConfig } from '@/app-config/entities/app-config.entity';
       return response;
     }
   
-    @Get('/me')
+    @Get('session')
     @ApiBearerAuth()
     @UseGuards(IsAuthenticatedGuard)
-    me(@AuthUser() user: User): IResponseWithRelation<User> {
+    checkSession(@AuthUser() user: User): IResponseWithRelation<User> {
 
       const response: IResponseWithRelation<User> = {
         statusCode: 200,
@@ -141,7 +141,7 @@ import { AppConfig } from '@/app-config/entities/app-config.entity';
         return response;
       }
 
-      user = await this.authService.confirmEmail(user.id, token);
+      user = await this.authService.confirmEmail(user.username, token);
 
       if (!user) {
         const response: IResponse = {

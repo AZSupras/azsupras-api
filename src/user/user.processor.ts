@@ -27,8 +27,6 @@ export class UserProcessor {
                 emailVerified: true,
             },
             select: {
-                firstName: true,
-                lastName: true,
                 username: true,
                 emailVerified: true,
             }
@@ -43,9 +41,11 @@ export class UserProcessor {
 
         eachOfSeries(users, async (user: User, k: number) => {
             this.logger.debug(`Verifying user ${user.username} ${k + 1} of ${users.length}`);
-            if (user.emailVerified && user.firstName && user.lastName) {
+            if (user.emailVerified) {
                 user.isVerified = true;
+                
                 user = await this.userService.update(user.username, user);
+
                 return;
             }
         }, (err: any) => {

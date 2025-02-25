@@ -124,7 +124,11 @@ let UserService = UserService_1 = class UserService {
                     name: true,
                 },
             },
-            where: { isPublic: true },
+            where: {
+                privacySettings: {
+                    isPublic: true,
+                },
+            },
         };
         const results = await this.repo.find(query);
         return results;
@@ -133,7 +137,9 @@ let UserService = UserService_1 = class UserService {
         const query = {
             where: {
                 username,
-                isPublic: true,
+                privacySettings: {
+                    isPublic: true,
+                },
             },
             ...options,
         };
@@ -182,8 +188,6 @@ let UserService = UserService_1 = class UserService {
                 username: true,
                 email: true,
                 passwordResetToken: true,
-                firstName: true,
-                lastName: true,
                 roles: {
                     slug: true,
                 },
@@ -200,8 +204,6 @@ let UserService = UserService_1 = class UserService {
                 id: true,
                 username: true,
                 emailVerificationToken: true,
-                firstName: true,
-                lastName: true,
                 email: true,
             }
         };
@@ -218,26 +220,22 @@ let UserService = UserService_1 = class UserService {
                 username: true,
                 emailVerified: true,
                 emailVerificationToken: true,
-                firstName: true,
-                lastName: true,
                 email: true,
             }
         };
         const results = await this.repo.findOne(query);
         return results;
     }
-    async confirmEmail(userId, token) {
+    async confirmEmail(username, token) {
         let user = await this.findOne({
             where: {
-                id: userId,
+                username,
             },
             select: {
                 id: true,
                 username: true,
                 emailVerified: true,
                 emailVerificationToken: true,
-                firstName: true,
-                lastName: true,
                 email: true,
             }
         });
@@ -247,7 +245,7 @@ let UserService = UserService_1 = class UserService {
         user.emailVerificationToken = null;
         user.emailVerified = true;
         user.emailVerifiedAt = new Date();
-        user = await this.update(user.id, user);
+        user = await this.update(user.username, user);
         return user;
     }
     async findOneByIdentity(identity, options) {
@@ -303,8 +301,6 @@ let UserService = UserService_1 = class UserService {
         const newUser = {
             username: newUserDto.username || this.generateRandomUsername(),
             email: newUserDto.email,
-            firstName: newUserDto.firstName,
-            lastName: newUserDto.lastName,
             password: this.hashService.hashSync(newUserDto.password),
             roles: roles,
         };
@@ -318,8 +314,6 @@ let UserService = UserService_1 = class UserService {
                 username: true,
                 email: true,
                 emailVerificationToken: true,
-                firstName: true,
-                lastName: true,
                 roles: {
                     slug: true,
                 },

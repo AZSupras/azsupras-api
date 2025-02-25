@@ -132,7 +132,11 @@ export class UserService {
           name: true,
         },
       },
-      where: { isPublic: true },
+      where: { 
+        privacySettings: {
+          isPublic: true,
+        },
+      },
     };
 
     const results: PublicUserDto[] = await this.repo.find(query);
@@ -147,7 +151,9 @@ export class UserService {
     const query: FindOneOptions<User> = {
       where: {
         username,
-        isPublic: true,
+        privacySettings: {
+          isPublic: true,
+        },
       },
       ...options,
     };
@@ -219,8 +225,6 @@ export class UserService {
         username: true,
         email: true,
         passwordResetToken: true,
-        firstName: true,
-        lastName: true,
         roles: {
           slug: true,
         },
@@ -239,8 +243,6 @@ export class UserService {
         id: true,
         username: true,
         emailVerificationToken: true,
-        firstName: true,
-        lastName: true,
         email: true,
       }
     };
@@ -260,8 +262,6 @@ export class UserService {
         username: true,
         emailVerified: true,
         emailVerificationToken: true,
-        firstName: true,
-        lastName: true,
         email: true,
       }
     };
@@ -271,18 +271,16 @@ export class UserService {
     return results;
   }
 
-  public async confirmEmail(userId: string, token: string): Promise<User> {
+  public async confirmEmail(username: string, token: string): Promise<User> {
     let user: User = await this.findOne({
       where: {
-        id: userId,
+        username,
       },
       select: {
         id: true,
         username: true,
         emailVerified: true,
         emailVerificationToken: true,
-        firstName: true,
-        lastName: true,
         email: true,
       }
     });
@@ -294,7 +292,7 @@ export class UserService {
     user.emailVerificationToken = null;
     user.emailVerified = true;
     user.emailVerifiedAt = new Date();
-    user = await this.update(user.id, user);
+    user = await this.update(user.username, user);
 
     return user;
   }
@@ -364,8 +362,6 @@ export class UserService {
     const newUser: Partial<User> = {
       username: newUserDto.username || this.generateRandomUsername(),
       email: newUserDto.email,
-      firstName: newUserDto.firstName,
-      lastName: newUserDto.lastName,
       password: this.hashService.hashSync(newUserDto.password),
       roles: roles,
     };
@@ -382,8 +378,6 @@ export class UserService {
         username: true,
         email: true,
         emailVerificationToken: true,
-        firstName: true,
-        lastName: true,
         roles: {
           slug: true,
         },

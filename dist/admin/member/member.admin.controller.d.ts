@@ -6,10 +6,12 @@ import { MemberPhoto } from '@/member/entities/member-photo.entity';
 import { MemberVehicle } from '@/member/entities/member-vehicle.entity';
 import { S3Service } from '@/s3/s3.service';
 import { AdminMemberService } from './member.admin.service';
+import { AdminUserService } from '../user/user.admin.service';
 export declare class AdminMemberController {
     private readonly memberService;
+    private readonly userService;
     private readonly s3Service;
-    constructor(memberService: AdminMemberService, s3Service: S3Service);
+    constructor(memberService: AdminMemberService, userService: AdminUserService, s3Service: S3Service);
     findAll(): Promise<IResponseWithRelation<Member[]>>;
     create(createMemberDto: CreateMemberDto): Promise<IResponseWithRelation<Member>>;
     update(id: string, updateMemberDto: UpdateMemberDto): Promise<IResponseWithRelation<Member>>;

@@ -58,7 +58,7 @@ let AuthController = class AuthController {
         };
         return response;
     }
-    me(user) {
+    checkSession(user) {
         const response = {
             statusCode: 200,
             message: 'Your profile.',
@@ -96,7 +96,7 @@ let AuthController = class AuthController {
             };
             return response;
         }
-        user = await this.authService.confirmEmail(user.id, token);
+        user = await this.authService.confirmEmail(user.username, token);
         if (!user) {
             const response = {
                 statusCode: 400,
@@ -159,7 +159,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Get)('logout'),
+    (0, common_1.Post)('logout'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
     __param(0, (0, common_1.Req)()),
@@ -168,14 +168,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
 __decorate([
-    (0, common_1.Get)('/me'),
+    (0, common_1.Get)('session'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
     __param(0, (0, user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Object)
-], AuthController.prototype, "me", null);
+], AuthController.prototype, "checkSession", null);
 __decorate([
     (0, common_1.Get)('confirm-email'),
     __param(0, (0, common_1.Req)()),

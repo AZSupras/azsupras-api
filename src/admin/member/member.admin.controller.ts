@@ -12,10 +12,12 @@ import { MemberPhoto } from '@/member/entities/member-photo.entity';
 import { MemberVehicle } from '@/member/entities/member-vehicle.entity';
 import { S3Service } from '@/s3/s3.service';
 import { AdminMemberService } from './member.admin.service';
+import { User } from '@/user/entities/user.entity';
+import { AdminUserService } from '../user/user.admin.service';
 
 @Controller(['admin/member', 'admin/members'])
 export class AdminMemberController {
-  constructor(private readonly memberService: AdminMemberService, private readonly s3Service: S3Service) {}
+  constructor(private readonly memberService: AdminMemberService, private readonly userService: AdminUserService, private readonly s3Service: S3Service) {}
 
     // get all members
     @Get()
@@ -36,6 +38,15 @@ export class AdminMemberController {
     @UseGuards(IsAuthenticatedGuard, IsAdminGuard)
     async create(@Body() createMemberDto: CreateMemberDto) {
         try {
+            if (createMemberDto.userId) {
+              const existingMember = await this.memberService.findOne({ where: { userId: createMemberDto.userId } });
+
+              if (existingMember) {
+                throw new BadRequestException('Member already exists for this user');
+              }
+
+              const existingUser: User = await this.userService.findOneById(createMemberDto.userId);
+            }
             const data: Member = await this.memberService.create(createMemberDto);
 
             const response: IResponseWithRelation<Member> = {

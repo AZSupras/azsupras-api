@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, InternalServerErrorException, BadRequestException, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, InternalServerErrorException, BadRequestException, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
 import { MemberService } from '../services/member.service';
 import { CreateMemberDto } from '../dto/create-member.dto';
 import { UpdateMemberDto } from '../dto/update-member.dto';
@@ -12,6 +12,8 @@ import { MemberPhoto } from '../entities/member-photo.entity';
 import { MemberVehicle } from '../entities/member-vehicle.entity';
 import { S3Service } from '@/s3/s3.service';
 import { MemberDto } from '../dto/member.dto';
+import { AuthUser } from '@/user/decorators/user.decorator';
+import { User } from '@/user/entities/user.entity';
 
 @Controller(['member', 'members'])
 export class MemberController {
@@ -39,21 +41,57 @@ export class MemberController {
     return response;
   }
 
-  // get all vehicles
-  @Get('vehicles')
-  async getAllVehicles() {
-    const data: MemberVehicle[] = await this.memberService.getAllVehicles();
+  @Get('me')
+  @UseGuards(IsAuthenticatedGuard)
+  async getMyMember(@AuthUser() user: User) {
+    const data: Member = await this.memberService.findOne({ where: { userId: user.id }, relations: ['user'] });
 
-    const response: IResponseWithRelation<MemberVehicle[]> = {
+    if (!data) {
+      const response: IResponse = {
+        statusCode: 404,
+        message: 'Member not found',
+      }
+
+      return response;
+    }
+
+    const response: IResponseWithRelation<Member> = {
       data: data,
       statusCode: 200,
-      message: 'Member vehicles fetched successfully',
+      message: 'Member fetched successfully',
     }
 
     return response;
   }
 
-  // get all member vehicles
+  @Put('me')
+  @UseGuards(IsAuthenticatedGuard)
+  async upsertMyMemberProfile(@AuthUser() user: User, @Body() updatesUser: UpdateMemberDto) {
+    const data: Member = await this.memberService.upsert({ ...updatesUser, user: user, userId: user.id });
+
+    const response: IResponseWithRelation<Member> = {
+      data: data,
+      statusCode: 200,
+      message: 'Member created successfully',
+    }
+
+    return response;
+  }
+
+  @Get(':id')
+  async getSingleMemberById(@Param('id') id: string) {
+    const data: Member = await this.memberService.findOneById(id);
+
+    const response: IResponseWithRelation<Member> = {
+      data: data,
+      statusCode: 200,
+      message: 'Member fetched successfully',
+    }
+
+    return response;
+  }
+
+  // get all vehicles for a single member by id
   @Get(':id/vehicles')
   async getMemberVehicles(@Param('id') id: string) {
     const data: MemberVehicle[] = await this.memberService.getMemberVehicles(id);
@@ -62,19 +100,6 @@ export class MemberController {
       data: data,
       statusCode: 200,
       message: 'Member vehicles fetched successfully',
-    }
-
-    return response;
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const data: Member = await this.memberService.findOneById(id);
-
-    const response: IResponseWithRelation<Member> = {
-      data: data,
-      statusCode: 200,
-      message: 'Member fetched successfully',
     }
 
     return response;

@@ -17,6 +17,9 @@ import { IResponseWithRelation } from '@/interfaces/IResponse';
 import { IsAuthenticatedGuard } from '@/auth/guards/is-authenticated.guard';
 import { IsAdminGuard } from '@/auth/guards/is-admin.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthUser } from '@/user/decorators/user.decorator';
+import { User } from '@/user/entities/user.entity';
+import { AppConfigWithUserSessionDto } from './dto/app-config-with-user-session.dto';
 
 @Controller('config')
 export class AppConfigController {
@@ -24,7 +27,7 @@ export class AppConfigController {
   constructor(private readonly appConfigService: AppConfigService) {}
 
   @Get()
-  async getLatestConfig() {
+  async getLatestConfig(@AuthUser() user: User): Promise<IResponseWithRelation<AppConfigWithUserSessionDto>> {
     const data: AppConfig | null = await this.appConfigService.getLatest();
 
     if (!data) {
@@ -32,10 +35,10 @@ export class AppConfigController {
       throw new InternalServerErrorException('No app config found');
     }
 
-    const response: IResponseWithRelation<AppConfig> = {
+    const response: IResponseWithRelation<AppConfigWithUserSessionDto> = {
       statusCode: 200,
       message: 'Success',
-      data,
+      data: new AppConfigWithUserSessionDto(data, user),
     };
 
     return response;

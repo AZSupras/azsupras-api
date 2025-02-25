@@ -16,11 +16,6 @@ class UserUpdate {
 exports.UserUpdate = UserUpdate;
 __decorate([
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], UserUpdate.prototype, "email", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UserUpdate.prototype, "firstName", void 0);
@@ -28,7 +23,22 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
+], UserUpdate.prototype, "middleName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
 ], UserUpdate.prototype, "lastName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UserUpdate.prototype, "suffix", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], UserUpdate.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),

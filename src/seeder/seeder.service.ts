@@ -10,7 +10,8 @@ import { Repository } from 'typeorm';
 import { eachOfSeries } from 'async';
 import { AppConfigService } from '@/app-config/app-config.service';
 import { AppConfig } from '@/app-config/entities/app-config.entity';
-import SeedData, { SeedUserDto } from './SeederData';
+import { SeedData } from './data';
+import { SeedUserDto } from './dto/seed-user.dto';
 
 @Injectable()
 export class SeederService {
@@ -181,17 +182,26 @@ export class SeederService {
 
       console.log(roles);
 
-      dbUser = this.userRepo.create({
-        username: user.username,
-        password: hash,
+      const newUser: Partial<User> = {
         firstName: user.firstName,
         lastName: user.lastName,
+        username: user.username,
+        password: hash,
         email: user.email,
         emailVerified: user.emailVerified,
         emailVerifiedAt: user.emailVerifiedAt,
-        isPublic: user.isPublic,
         roles: roles,
-      });
+        privacySettings: {
+          firstNameVisible: user.privacySettings.firstNameVisible || true,
+          lastNameVisible: user.privacySettings.lastNameVisible || false,
+          middleNameVisible: user.privacySettings.middleNameVisible || false,
+          suffixVisible: user.privacySettings.suffixVisible || false,
+          emailVisible: user.privacySettings.emailVisible || false,
+          isPublic: user.privacySettings.isPublic || true,
+        },
+      };
+
+      dbUser = this.userRepo.create(newUser);
 
       dbUser = await this.userRepo.save(dbUser);
       this.logger.log(

@@ -32,7 +32,7 @@ export class AdminMemberService {
 
   public async findAll(): Promise<Member[]> {
     const query: FindManyOptions<Member> = {
-      relations: ['photo'],
+      relations: ['photo', 'user'],
     };
     const results = await this.repo.find(query);
 

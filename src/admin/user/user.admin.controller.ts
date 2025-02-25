@@ -20,14 +20,10 @@ export class AdminUserController {
       select: {
         id: true,
         username: true,
-        firstName: true,
-        lastName: true,
         email: true,
-        birthday: true,
         isBanned: true,
         bannedAt: true,
         bannedReason: true,
-        isPublic: true,
         isOnline: true,
         emailVerified: true,
         emailVerificationToken: true,
@@ -43,9 +39,18 @@ export class AdminUserController {
         bans: true,
         sentMessages: true,
         receivedMessages: true,
+        privacySettings: {
+          firstNameVisible: true,
+          lastNameVisible: true,
+          middleNameVisible: true,
+          suffixVisible: true,
+          emailVisible: true,
+          isPublic: true,
+        },
       },
       relations: {
         roles: true,
+        member: true,
       }
     });
 
@@ -70,14 +75,10 @@ export class AdminUserController {
         select: {
           id: true,
           username: true,
-          firstName: true,
-          lastName: true,
           email: true,
-          birthday: true,
           isBanned: true,
           bannedAt: true,
           bannedReason: true,
-          isPublic: true,
           isOnline: true,
           emailVerified: true,
           emailVerificationToken: true,
@@ -93,6 +94,14 @@ export class AdminUserController {
           bans: true,
           sentMessages: true,
           receivedMessages: true,
+          privacySettings: {
+            firstNameVisible: true,
+            lastNameVisible: true,
+            middleNameVisible: true,
+            suffixVisible: true,
+            emailVisible: true,
+            isPublic: true,
+          },
         },
         relations: {
           roles: true,

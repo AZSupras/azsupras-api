@@ -13,6 +13,14 @@ exports.Member = void 0;
 const typeorm_1 = require("typeorm");
 const member_photo_entity_1 = require("./member-photo.entity");
 const member_vehicle_entity_1 = require("./member-vehicle.entity");
+const user_entity_1 = require("../../user/entities/user.entity");
+const defaultUserPrivacySetting = {
+    firstNameVisible: true,
+    lastNameVisible: false,
+    middleNameVisible: false,
+    suffixVisible: false,
+    emailVisible: false,
+};
 let Member = class Member {
 };
 exports.Member = Member;
@@ -27,7 +35,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], Member.prototype, "middleName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], Member.prototype, "lastName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Member.prototype, "suffix", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
@@ -69,7 +85,11 @@ __decorate([
     __metadata("design:type", Date)
 ], Member.prototype, "birthDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)('jsonb', { default: { firstNameVisible: true, lastNameVisible: false, emailVisible: false, phoneVisible: false, address1Visible: false, address2Visible: false, cityVisible: false, stateVisible: false, zipVisible: false, countryVisible: false, genderVisible: false, birthDateVisible: false } }),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Member.prototype, "userId", void 0);
+__decorate([
+    (0, typeorm_1.Column)('jsonb', { default: defaultUserPrivacySetting }),
     __metadata("design:type", Array)
 ], Member.prototype, "privacySettings", void 0);
 __decorate([
@@ -96,6 +116,11 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => member_vehicle_entity_1.MemberVehicle, (vehicle) => vehicle.member, { eager: true }),
     __metadata("design:type", Array)
 ], Member.prototype, "vehicles", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => user_entity_1.User, (user) => user.member),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", user_entity_1.User)
+], Member.prototype, "user", void 0);
 exports.Member = Member = __decorate([
     (0, typeorm_1.Entity)()
 ], Member);

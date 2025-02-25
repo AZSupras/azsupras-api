@@ -15,6 +15,7 @@ const member_vehicle_entity_1 = require("../../member/entities/member-vehicle.en
 const member_entity_1 = require("../../member/entities/member.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const s3_module_1 = require("../../s3/s3.module");
+const user_admin_module_1 = require("../user/user.admin.module");
 let AdminMemberModule = class AdminMemberModule {
 };
 exports.AdminMemberModule = AdminMemberModule;
@@ -23,8 +24,9 @@ exports.AdminMemberModule = AdminMemberModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([member_entity_1.Member, member_photo_entity_1.MemberPhoto, member_vehicle_entity_1.MemberVehicle]),
             s3_module_1.S3Module,
+            user_admin_module_1.AdminUserModule,
         ],
-        providers: [member_admin_service_1.AdminMemberService],
+        providers: [member_admin_service_1.AdminMemberService,],
         controllers: [
             member_admin_controller_1.AdminMemberController,
         ],

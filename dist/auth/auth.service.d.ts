@@ -1,6 +1,5 @@
 /// <reference types="cookie-parser" />
 import { Request } from 'express';
-import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -9,9 +8,8 @@ import { IUser } from '@/user/dto/user-profile.dto';
 import { Queue } from 'bull';
 export declare class AuthService {
     private readonly userService;
-    private readonly jwtService;
     private emailQueue;
-    constructor(userService: UserService, jwtService: JwtService, emailQueue: Queue);
+    constructor(userService: UserService, emailQueue: Queue);
     register(signUp: SignUpDto): Promise<User>;
     login(identity: string, password: string): Promise<IUser>;
     logout(request: Request): Promise<void>;
@@ -19,7 +17,6 @@ export declare class AuthService {
     verifyPayload(payload: JwtPayload): Promise<User>;
     findUserByEmailVerificationToken(token: string): Promise<User>;
     findUserByUserId(userId: string): Promise<User | null>;
-    confirmEmail(userId: string, token: string): Promise<User>;
-    signToken(user: User): string;
+    confirmEmail(username: string, token: string): Promise<User>;
     resetPassword({ token, password }: IResetPasswordValues): Promise<User>;
 }

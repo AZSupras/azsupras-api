@@ -24,7 +24,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_2 = require("typeorm");
 const async_1 = require("async");
 const app_config_service_1 = require("../app-config/app-config.service");
-const SeederData_1 = require("./SeederData");
+const data_1 = require("./data");
 let SeederService = SeederService_1 = class SeederService {
     constructor(userRepo, roleRepository, hashService, configService, appConfigService, logger) {
         this.userRepo = userRepo;
@@ -54,10 +54,10 @@ let SeederService = SeederService_1 = class SeederService {
             return;
         }
         else {
-            await this._seedUserRoles(SeederData_1.default.userRoles)
+            await this._seedUserRoles(data_1.SeedData.userRoles)
                 .then(async (roles) => {
                 this.logger.debug(`${roles.length} Roles seeded.`);
-                let users = await this._seedUsers(SeederData_1.default.users);
+                let users = await this._seedUsers(data_1.SeedData.users);
                 this.logger.debug(`${users.length} Users seeded.`);
             })
                 .catch((err) => {
@@ -139,17 +139,25 @@ let SeederService = SeederService_1 = class SeederService {
                 .where('roles.slug IN (:...slugs)', { slugs: user.roleSlugs })
                 .getMany();
             console.log(roles);
-            dbUser = this.userRepo.create({
-                username: user.username,
-                password: hash,
+            const newUser = {
                 firstName: user.firstName,
                 lastName: user.lastName,
+                username: user.username,
+                password: hash,
                 email: user.email,
                 emailVerified: user.emailVerified,
                 emailVerifiedAt: user.emailVerifiedAt,
-                isPublic: user.isPublic,
                 roles: roles,
-            });
+                privacySettings: {
+                    firstNameVisible: user.privacySettings.firstNameVisible || true,
+                    lastNameVisible: user.privacySettings.lastNameVisible || false,
+                    middleNameVisible: user.privacySettings.middleNameVisible || false,
+                    suffixVisible: user.privacySettings.suffixVisible || false,
+                    emailVisible: user.privacySettings.emailVisible || false,
+                    isPublic: user.privacySettings.isPublic || true,
+                },
+            };
+            dbUser = this.userRepo.create(newUser);
             dbUser = await this.userRepo.save(dbUser);
             this.logger.log(`User '${dbUser.username}' has been created with password '${user.password}'.`);
         }

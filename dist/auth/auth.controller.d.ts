@@ -13,7 +13,7 @@ export declare class AuthController {
     register(signUp: SignUpDto): Promise<IResponseWithRelation<User>>;
     login(user: User): Promise<IResponseWithRelation<User>>;
     logout(request: Request): Promise<IResponse>;
-    me(user: User): IResponseWithRelation<User>;
+    checkSession(user: User): IResponseWithRelation<User>;
     confirmEmail(request: Request, token: string): Promise<IResponseWithRelation<User>>;
     forgotPassword({ email }: IForgotPasswordValues): Promise<IResponse>;
     resetPassword(payload: IResetPasswordValues): Promise<IResponseWithRelation<User>>;

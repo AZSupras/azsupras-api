@@ -15,7 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MemberController = void 0;
 const common_1 = require("@nestjs/common");
 const member_service_1 = require("../services/member.service");
+const update_member_dto_1 = require("../dto/update-member.dto");
+const is_authenticated_guard_1 = require("../../auth/guards/is-authenticated.guard");
 const s3_service_1 = require("../../s3/s3.service");
+const user_decorator_1 = require("../../user/decorators/user.decorator");
+const user_entity_1 = require("../../user/entities/user.entity");
 let MemberController = class MemberController {
     constructor(memberService, s3Service) {
         this.memberService = memberService;
@@ -38,12 +42,37 @@ let MemberController = class MemberController {
         };
         return response;
     }
-    async getAllVehicles() {
-        const data = await this.memberService.getAllVehicles();
+    async getMyMember(user) {
+        const data = await this.memberService.findOne({ where: { userId: user.id }, relations: ['user'] });
+        if (!data) {
+            const response = {
+                statusCode: 404,
+                message: 'Member not found',
+            };
+            return response;
+        }
         const response = {
             data: data,
             statusCode: 200,
-            message: 'Member vehicles fetched successfully',
+            message: 'Member fetched successfully',
+        };
+        return response;
+    }
+    async upsertMyMemberProfile(user, updatesUser) {
+        const data = await this.memberService.upsert({ ...updatesUser, user: user, userId: user.id });
+        const response = {
+            data: data,
+            statusCode: 200,
+            message: 'Member created successfully',
+        };
+        return response;
+    }
+    async getSingleMemberById(id) {
+        const data = await this.memberService.findOneById(id);
+        const response = {
+            data: data,
+            statusCode: 200,
+            message: 'Member fetched successfully',
         };
         return response;
     }
@@ -56,15 +85,6 @@ let MemberController = class MemberController {
         };
         return response;
     }
-    async findOne(id) {
-        const data = await this.memberService.findOneById(id);
-        const response = {
-            data: data,
-            statusCode: 200,
-            message: 'Member fetched successfully',
-        };
-        return response;
-    }
 };
 exports.MemberController = MemberController;
 __decorate([
@@ -74,11 +94,29 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MemberController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('vehicles'),
+    (0, common_1.Get)('me'),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
+    __param(0, (0, user_decorator_1.AuthUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [user_entity_1.User]),
     __metadata("design:returntype", Promise)
-], MemberController.prototype, "getAllVehicles", null);
+], MemberController.prototype, "getMyMember", null);
+__decorate([
+    (0, common_1.Put)('me'),
+    (0, common_1.UseGuards)(is_authenticated_guard_1.IsAuthenticatedGuard),
+    __param(0, (0, user_decorator_1.AuthUser)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [user_entity_1.User, update_member_dto_1.UpdateMemberDto]),
+    __metadata("design:returntype", Promise)
+], MemberController.prototype, "upsertMyMemberProfile", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MemberController.prototype, "getSingleMemberById", null);
 __decorate([
     (0, common_1.Get)(':id/vehicles'),
     __param(0, (0, common_1.Param)('id')),
@@ -86,13 +124,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], MemberController.prototype, "getMemberVehicles", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], MemberController.prototype, "findOne", null);
 exports.MemberController = MemberController = __decorate([
     (0, common_1.Controller)(['member', 'members']),
     __metadata("design:paramtypes", [member_service_1.MemberService, s3_service_1.S3Service])

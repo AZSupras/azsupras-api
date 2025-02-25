@@ -3,15 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { LoggerService } from './logger/logger.service';
 import { AppModule } from './app.module';
 import { LogLevel, NestApplicationOptions } from '@nestjs/common';
-import * as session from 'express-session';
-import { RedisStore } from 'connect-redis';
-import * as passport from 'passport';
-import * as cookieParser from 'cookie-parser';
-import {createClient} from "redis"
-import { SeedData_Users, SeedUserDto } from './seeder/SeederData';
 import { setup } from './setup';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import { SeedData, } from './seeder/data';
+import { CreateUserDto } from './user/dto/create-user.dto';
+ 
 const logger = new LoggerService('Main');
 
 async function bootstrap() {
@@ -57,7 +53,7 @@ async function bootstrap() {
 
 bootstrap()
 .then(({ app, apiBaseUrl}) => {
-  const { username, password, ...defaultAdminUser}: SeedUserDto = SeedData_Users[0];
+  const { username, password, ...defaultAdminUser}: CreateUserDto = SeedData.users[0];
   
   setTimeout(() => {
     logger.printStartupBanner(apiBaseUrl, username, password);

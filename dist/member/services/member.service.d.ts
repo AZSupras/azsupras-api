@@ -19,6 +19,7 @@ export declare class MemberService {
     findOneById(id: string): Promise<Member>;
     create(data: CreateMemberDto): Promise<Member>;
     update(id: string, data: UpdateMemberDto): Promise<Member>;
+    upsert(data: UpdateMemberDto): Promise<Member>;
     remove(id: string): Promise<Member>;
     createPhoto(data: CreateMemberPhotoDto): Promise<MemberPhoto>;
     getMemberPhoto(memberId: string): Promise<MemberPhoto>;

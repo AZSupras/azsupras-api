@@ -11,6 +11,8 @@ const passport = require("passport");
 const connectPgSimple = require("connect-pg-simple");
 const app_module_1 = require("./app.module");
 const config_1 = require("@nestjs/config");
+const logger_service_1 = require("./logger/logger.service");
+const logger = new logger_service_1.LoggerService('Session Setup');
 function setup(app) {
     const config = app.get(config_1.ConfigService);
     const appSecret = config.get('APP_SECRET');
@@ -30,9 +32,11 @@ function setup(app) {
     });
     redisSessionClient.connect()
         .then(() => {
-        console.log('Redis session client connected');
+        logger.log('Redis session client connected');
     })
-        .catch(console.error);
+        .catch((error) => {
+        logger.error(error);
+    });
     const sessionStore = (nodeEnv === 'production')
         ? new (connectPgSimple(session))({
             conString: config.get('DATABASE_URL'),

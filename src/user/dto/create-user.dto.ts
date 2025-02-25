@@ -1,5 +1,6 @@
-import { IsBoolean, IsDefined, IsEmail, IsNotEmpty, IsString, Validate } from "class-validator";
+import { IsBoolean, IsDefined, IsEmail, IsNotEmpty, IsOptional, IsString, Validate } from "class-validator";
 import { IsUserAlreadyExist } from "../validators/is-user-already-exist.validator";
+import { UserPrivacySetting } from "@/member/types/UserPrivacySetting";
 
 export class CreateUserDto {
   @IsDefined()
@@ -13,18 +14,33 @@ export class CreateUserDto {
   @IsNotEmpty()
   password: string;
 
+  @IsOptional()
+  @IsString()
+  firstName?: string
+
+  @IsOptional()
+  @IsString()
+  middleName?: string
+
+  @IsOptional()
+  @IsString()
+  lastName?: string
+
+  @IsOptional()
+  @IsString()
+  suffix?: string
+
+  @IsOptional()
   @IsEmail()
   email?: string | null;
-
-  @IsString()
-  firstName?: string | null;
   
-  @IsString()
-  lastName?: string | null;
-  
+  @IsOptional()
   @IsBoolean()
   isPublic?: boolean | null;
 
   @IsString({ each: true })
   roleSlugs: string[];
+
+  @IsOptional()
+  privacySettings?: UserPrivacySetting;
 }

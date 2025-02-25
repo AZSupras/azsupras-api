@@ -68,7 +68,6 @@ let EmailService = EmailService_1 = class EmailService {
             template: 'confirm_email',
             context: {
                 username: user.username,
-                firstName: user.firstName,
                 confirmLink: confirmLink,
             },
         };
@@ -84,7 +83,6 @@ let EmailService = EmailService_1 = class EmailService {
             context: {
                 email: mail.to,
                 username: mail.context.username,
-                firstName: mail.context.firstName,
             },
         };
         const results = await this._send(opts);

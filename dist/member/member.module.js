@@ -15,6 +15,7 @@ const member_entity_1 = require("./entities/member.entity");
 const member_photo_entity_1 = require("./entities/member-photo.entity");
 const member_vehicle_entity_1 = require("./entities/member-vehicle.entity");
 const s3_module_1 = require("../s3/s3.module");
+const member_vehicle_controller_1 = require("./controllers/member-vehicle.controller");
 let MemberModule = class MemberModule {
 };
 exports.MemberModule = MemberModule;
@@ -24,7 +25,7 @@ exports.MemberModule = MemberModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([member_entity_1.Member, member_photo_entity_1.MemberPhoto, member_vehicle_entity_1.MemberVehicle]),
             s3_module_1.S3Module,
         ],
-        controllers: [member_controller_1.MemberController],
+        controllers: [member_controller_1.MemberController, member_vehicle_controller_1.MemberVehicleController],
         providers: [member_service_1.MemberService],
         exports: [member_service_1.MemberService, typeorm_1.TypeOrmModule],
     })

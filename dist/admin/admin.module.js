@@ -10,13 +10,13 @@ exports.AdminModule = void 0;
 const common_1 = require("@nestjs/common");
 const admin_service_1 = require("./admin.service");
 const user_module_1 = require("../user/user.module");
-const ban_module_1 = require("./ban/ban/ban.module");
 const admin_controller_1 = require("./admin.controller");
 const user_admin_controller_1 = require("./user/user.admin.controller");
 const user_admin_service_1 = require("./user/user.admin.service");
 const user_role_admin_controller_1 = require("./user/user-role.admin.controller");
 const user_role_admin_service_1 = require("./user/user-role.admin.service");
 const member_admin_module_1 = require("./member/member.admin.module");
+const user_ban_module_1 = require("./user/user-ban.module");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
@@ -24,7 +24,7 @@ exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
             user_module_1.UserModule,
-            ban_module_1.BanModule,
+            user_ban_module_1.UserBanModule,
             member_admin_module_1.AdminMemberModule,
         ],
         providers: [admin_service_1.AdminService, user_admin_service_1.AdminUserService, user_role_admin_service_1.AdminUserRoleService],

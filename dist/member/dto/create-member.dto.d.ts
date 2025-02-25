@@ -1,3 +1,4 @@
+import { User } from "@/user/entities/user.entity";
 export declare class CreateMemberDto {
     firstName: string;
     lastName?: string | null;
@@ -13,4 +14,6 @@ export declare class CreateMemberDto {
     birthDate?: Date | null;
     createdAt?: Date | null;
     updatedAt?: Date | null;
+    userId?: string | null;
+    user?: User | null;
 }

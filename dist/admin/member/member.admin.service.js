@@ -34,7 +34,7 @@ let AdminMemberService = AdminMemberService_1 = class AdminMemberService {
     }
     async findAll() {
         const query = {
-            relations: ['photo'],
+            relations: ['photo', 'user'],
         };
         const results = await this.repo.find(query);
         return results;

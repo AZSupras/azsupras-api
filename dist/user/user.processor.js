@@ -32,8 +32,6 @@ let UserProcessor = UserProcessor_1 = class UserProcessor {
                 emailVerified: true,
             },
             select: {
-                firstName: true,
-                lastName: true,
                 username: true,
                 emailVerified: true,
             }
@@ -45,7 +43,7 @@ let UserProcessor = UserProcessor_1 = class UserProcessor {
         this.logger.debug(`Verifying ${users.length} users`);
         (0, async_1.eachOfSeries)(users, async (user, k) => {
             this.logger.debug(`Verifying user ${user.username} ${k + 1} of ${users.length}`);
-            if (user.emailVerified && user.firstName && user.lastName) {
+            if (user.emailVerified) {
                 user.isVerified = true;
                 user = await this.userService.update(user.username, user);
                 return;

@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 
 import { UserUpdate } from '../dto/user-update.dto';
-import { JWTAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { Public } from '@/auth/guards/public.guard';
@@ -33,7 +32,89 @@ export class ProfileController {
   @UseGuards(IsAuthenticatedGuard)
   @ApiBearerAuth()
   async getMe(@AuthUser() user: User, @Req() req: Request): Promise<IResponseWithRelation<User>> {
-    const data: User = user;
+    const data: User = await this.userService.findOneByUsername(user.username, {
+      select: {
+        id: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        suffix: true,
+        username: true,
+        email: true,
+        isBanned: true,
+        bannedAt: true,
+        bannedReason: true,
+        isVerified: true,
+        isOnline: true,
+        emailVerified: true,
+        emailVerificationToken: true,
+        emailVerifiedAt: true,
+        passwordResetToken: true,
+        passwordResetExpires: true,
+        passwordResetRequestedAt: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+        inviteId: true,
+        website: true,
+        location: true,
+        subscriber: {
+          email: true,
+          firstName: true,
+          lastName: true,
+          subscribed: true,
+          unsubscribeToken: true,
+          unsubscribedAt: true,
+          subscribeEmailSentAt: true,
+          unsubscribeEmailSentAt: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+          emails: true,
+        },
+        roles: {
+          name: true,
+          slug: true,
+        },
+        bans: true,
+        sentMessages: true,
+        receivedMessages: true,
+        member: {
+          firstName: true,
+          middleName: true,
+          lastName: true,
+          suffix: true,
+          email: true,
+          phone: true,
+          address1: true,
+          address2: true,
+          city: true,
+          state: true,
+          zip: true,
+          country: true,
+          gender: true,
+          birthDate: true,
+          userId: true,
+          privacySettings: true,
+          createdAt: true,
+          updatedAt: true,
+          photo: {
+            url: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          vehicles: true,
+        },
+        privacySettings: {
+          firstNameVisible: true,
+          lastNameVisible: true,
+          middleNameVisible: true,
+          suffixVisible: true,
+          emailVisible: true,
+          isPublic: true,
+        },
+      },
+    });
 
     const results: IResponseWithRelation<User> = {
       statusCode: 200,
@@ -48,7 +129,89 @@ export class ProfileController {
   @ApiBearerAuth()
   @UseGuards(IsAuthenticatedGuard)
   async updateMe(@AuthUser() user: User, @Body() updatesUser: UserUpdate): Promise<IResponseWithRelation<User>> {
-    const data: User = await this.userService.update(user.username, updatesUser);
+    const data: User = await this.userService.update(user.username, updatesUser, {
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        middleName: true,
+        lastName: true,
+        suffix: true,
+        email: true,
+        isBanned: true,
+        bannedAt: true,
+        bannedReason: true,
+        isVerified: true,
+        isOnline: true,
+        emailVerified: true,
+        emailVerificationToken: true,
+        emailVerifiedAt: true,
+        passwordResetToken: true,
+        passwordResetExpires: true,
+        passwordResetRequestedAt: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+        inviteId: true,
+        website: true,
+        location: true,
+        subscriber: {
+          email: true,
+          firstName: true,
+          lastName: true,
+          subscribed: true,
+          unsubscribeToken: true,
+          unsubscribedAt: true,
+          subscribeEmailSentAt: true,
+          unsubscribeEmailSentAt: true,
+          createdAt: true,
+          updatedAt: true,
+          deletedAt: true,
+          emails: true,
+        },
+        roles: {
+          name: true,
+          slug: true,
+        },
+        bans: true,
+        sentMessages: true,
+        receivedMessages: true,
+        member: {
+          firstName: true,
+          middleName: true,
+          lastName: true,
+          suffix: true,
+          email: true,
+          phone: true,
+          address1: true,
+          address2: true,
+          city: true,
+          state: true,
+          zip: true,
+          country: true,
+          gender: true,
+          birthDate: true,
+          userId: true,
+          privacySettings: true,
+          createdAt: true,
+          updatedAt: true,
+          photo: {
+            url: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          vehicles: true,
+        },
+        privacySettings: {
+          firstNameVisible: true,
+          lastNameVisible: true,
+          middleNameVisible: true,
+          suffixVisible: true,
+          emailVisible: true,
+          isPublic: true,
+        },
+      },
+    });
 
     const results: IResponseWithRelation<User> = {
       statusCode: 200,

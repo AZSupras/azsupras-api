@@ -29,18 +29,32 @@ __decorate([
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
 __decorate([
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "email", void 0);
-__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "firstName", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "middleName", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "lastName", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "suffix", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "email", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),
     __metadata("design:type", Boolean)
 ], CreateUserDto.prototype, "isPublic", void 0);
@@ -48,4 +62,8 @@ __decorate([
     (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", Array)
 ], CreateUserDto.prototype, "roleSlugs", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], CreateUserDto.prototype, "privacySettings", void 0);
 //# sourceMappingURL=create-user.dto.js.map

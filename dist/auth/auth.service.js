@@ -14,14 +14,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
 const user_service_1 = require("../user/services/user.service");
 const user_profile_dto_1 = require("../user/dto/user-profile.dto");
 const bull_1 = require("@nestjs/bull");
 let AuthService = class AuthService {
-    constructor(userService, jwtService, emailQueue) {
+    constructor(userService, emailQueue) {
         this.userService = userService;
-        this.jwtService = jwtService;
         this.emailQueue = emailQueue;
     }
     async register(signUp) {
@@ -33,8 +31,6 @@ let AuthService = class AuthService {
             username: signUp.username,
             email: signUp.email,
             password: signUp.password,
-            firstName: signUp.firstName,
-            lastName: signUp.lastName,
             roleSlugs: ['user'],
         };
         const user = await this.userService.create(createUserDto);
@@ -46,8 +42,6 @@ let AuthService = class AuthService {
                 context: {
                     username: user.username,
                     email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
                 },
             };
             const confirmEmail = {
@@ -56,8 +50,6 @@ let AuthService = class AuthService {
                 context: {
                     username: user.username,
                     email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
                 },
             };
             const welcomeEmailJob = this.emailQueue.add(welcomeEmail);
@@ -110,8 +102,6 @@ let AuthService = class AuthService {
                 context: {
                     username: user.username,
                     email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
                     token: user.passwordResetToken,
                 },
             };
@@ -142,20 +132,14 @@ let AuthService = class AuthService {
             throw new Error(err.message);
         }
     }
-    async confirmEmail(userId, token) {
+    async confirmEmail(username, token) {
         try {
-            let user = await this.userService.confirmEmail(userId, token);
+            let user = await this.userService.confirmEmail(username, token);
             return user;
         }
         catch (err) {
             throw new Error(err.message);
         }
-    }
-    signToken(user) {
-        const payload = {
-            sub: user.username,
-        };
-        return this.jwtService.sign(payload);
     }
     async resetPassword({ token, password }) {
         const user = await this.userService.resetPassword(token, password);
@@ -171,8 +155,7 @@ __decorate([
 ], AuthService.prototype, "logout", null);
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, bull_1.InjectQueue)('email')),
-    __metadata("design:paramtypes", [user_service_1.UserService,
-        jwt_1.JwtService, Object])
+    __param(1, (0, bull_1.InjectQueue)('email')),
+    __metadata("design:paramtypes", [user_service_1.UserService, Object])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

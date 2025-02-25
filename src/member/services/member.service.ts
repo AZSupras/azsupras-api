@@ -65,6 +65,23 @@ export class MemberService {
     return results;
   }
 
+  public async upsert(data: UpdateMemberDto): Promise<Member> {
+    let results: Member;
+
+    if (data.id) {
+      results = await this.findOneById(data.id);
+    }
+
+    if (!results) {
+      results = await this.create(data as CreateMemberDto);
+    } else {
+      results = await this.update(data.id, data);
+    }
+
+
+    return results;
+  }
+
   public async remove(id: string): Promise<Member> {
     const member = await this.repo.findOne({ where: { id } });
     const results = await this.repo.remove(member);

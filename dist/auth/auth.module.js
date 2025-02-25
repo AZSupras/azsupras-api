@@ -8,15 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthModule = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
 const passport_1 = require("@nestjs/passport");
 const user_module_1 = require("../user/user.module");
 const auth_controller_1 = require("./auth.controller");
 const auth_service_1 = require("./auth.service");
 const session_serializer_1 = require("./session.serializer");
 const local_strategy_1 = require("./strategies/local.strategy");
-const jwt_strategy_1 = require("./strategies/jwt.strategy");
-const auth_constants_1 = require("./auth.constants");
 const bull_1 = require("@nestjs/bull");
 const app_config_module_1 = require("../app-config/app-config.module");
 let AuthModule = class AuthModule {
@@ -28,22 +25,12 @@ exports.AuthModule = AuthModule = __decorate([
             app_config_module_1.AppConfigModule,
             user_module_1.UserModule,
             passport_1.PassportModule.register({ session: true, defaultStrategy: 'local' }),
-            jwt_1.JwtModule.register({
-                secret: auth_constants_1.jwtConstants.secret,
-                signOptions: {
-                    expiresIn: '1d',
-                    algorithm: 'HS384',
-                },
-                verifyOptions: {
-                    algorithms: ['HS384'],
-                },
-            }),
             bull_1.BullModule.registerQueue({
                 name: 'email',
             }),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, jwt_strategy_1.JwtStrategy, session_serializer_1.SessionSerializer,],
+        providers: [auth_service_1.AuthService, local_strategy_1.LocalStrategy, session_serializer_1.SessionSerializer,],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

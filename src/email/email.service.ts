@@ -74,7 +74,6 @@ export class EmailService {
       template: 'confirm_email',
       context: {
         username: user.username,
-        firstName: user.firstName,
         confirmLink: confirmLink,
       },
     };
@@ -97,7 +96,6 @@ export class EmailService {
       context: {
         email: mail.to,
         username: mail.context.username,
-        firstName: mail.context.firstName,
       },
     };
 

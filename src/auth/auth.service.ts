@@ -16,7 +16,6 @@ import { CreateEmailDto } from '@/email/create-email.dto';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
     @InjectQueue('email') private emailQueue: Queue,
   ) {}
 
@@ -30,8 +29,6 @@ export class AuthService {
       username: signUp.username,
       email: signUp.email,
       password: signUp.password,
-      firstName: signUp.firstName,
-      lastName: signUp.lastName,
       roleSlugs: ['user'],
     };
 
@@ -45,8 +42,6 @@ export class AuthService {
         context: {
           username: user.username,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
         },
       }
 
@@ -56,8 +51,6 @@ export class AuthService {
         context: {
           username: user.username,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
         },
       }
 
@@ -124,8 +117,6 @@ export class AuthService {
           context: {
             username: user.username,
             email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
             token: user.passwordResetToken,
           },
         }
@@ -165,21 +156,13 @@ export class AuthService {
     }
   }
 
-  async confirmEmail(userId: string, token: string) {
+  async confirmEmail(username: string, token: string) {
     try {
-      let user: User = await this.userService.confirmEmail(userId, token);
+      let user: User = await this.userService.confirmEmail(username, token);
       return user;
     } catch(err) {
       throw new Error(err.message);
     }
-  }
-
-  signToken(user: User): string {
-    const payload = {
-      sub: user.username,
-    };
-
-    return this.jwtService.sign(payload);
   }
 
   async resetPassword({ token, password }: IResetPasswordValues): Promise<User> {

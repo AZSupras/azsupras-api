@@ -1,3 +1,4 @@
+import { User } from "@/user/entities/user.entity";
 import { IsDefined, IsString, IsNotEmpty, IsEmail, IsOptional, IsDate, IsDateString } from "class-validator"
 
 export class CreateMemberDto {
@@ -57,4 +58,10 @@ export class CreateMemberDto {
     @IsDate()
     @IsOptional()
     updatedAt?: Date | null;
+
+    @IsOptional()
+    userId?: string | null;
+
+    @IsOptional()
+    user?: User | null;
 }

@@ -6,13 +6,16 @@ import { MemberVehicle } from '@/member/entities/member-vehicle.entity';
 import { Member } from '@/member/entities/member.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { S3Module } from '@/s3/s3.module';
+import { AdminUserService } from '../user/user.admin.service';
+import { AdminUserModule } from '../user/user.admin.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Member, MemberPhoto, MemberVehicle]),
     S3Module,
+    AdminUserModule,
   ],
-  providers: [AdminMemberService],
+  providers: [AdminMemberService,],
   controllers: [
     AdminMemberController,
   ],
